@@ -1,0 +1,6 @@
+{
+  "name": "WESLEY - Filmmaker & Studio Management",
+  "description": "A studio website and portfolio management platform for Wesley, a filmmaker and photographer based in Kigali, Rwanda.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
