@@ -8,7 +8,13 @@
   ],
   "functions": {
     "api/index.ts": {
-      "includeFiles": "{views/**,public/**,database/**,src/assets/**}"
+      "includeFiles": [
+        "views/**",
+        "public/**",
+        "database/**",
+        "src/assets/**",
+        "node_modules/sql.js/dist/**"
+      ]
     }
   }
 }

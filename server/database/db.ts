@@ -1,10 +1,31 @@
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const IS_VERCEL = Boolean(process.env.VERCEL);
-const BUNDLED_DB_FILE = path.join(process.cwd(), 'database', 'wesley.db');
+
+function findFile(...relativePaths: string[]): string | null {
+  const bases = [
+    process.cwd(),
+    __dirname,
+    path.join(__dirname, '..'),
+    '/var/task'
+  ];
+  for (const rel of relativePaths) {
+    for (const base of bases) {
+      const candidate = path.join(base, rel);
+      if (fs.existsSync(candidate)) return candidate;
+    }
+  }
+  return null;
+}
+
+const BUNDLED_DB_FILE = findFile('database/wesley.db') || path.join(process.cwd(), 'database', 'wesley.db');
 const DB_FILE = IS_VERCEL ? path.join('/tmp', 'wesley.db') : BUNDLED_DB_FILE;
 
 let dbInstance: SqlJsDatabase | null = null;
@@ -14,13 +35,14 @@ export async function getDb(): Promise<SqlJsDatabase> {
     return dbInstance;
   }
 
-  const localWasm = path.join(process.cwd(), 'database', 'sql-wasm.wasm');
-  const nodeModulesWasm = path.join(process.cwd(), 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
+  const wasmPath = findFile('database/sql-wasm.wasm', 'node_modules/sql.js/dist/sql-wasm.wasm');
   let wasmBinary: Buffer | undefined;
-  if (fs.existsSync(localWasm)) {
-    wasmBinary = fs.readFileSync(localWasm);
-  } else if (fs.existsSync(nodeModulesWasm)) {
-    wasmBinary = fs.readFileSync(nodeModulesWasm);
+  if (wasmPath) {
+    try {
+      wasmBinary = fs.readFileSync(wasmPath);
+    } catch (e) {
+      console.warn('Could not read wasm binary:', e);
+    }
   }
 
   const SQL = await initSqlJs(wasmBinary ? { wasmBinary } : {});
@@ -71,15 +93,20 @@ export function saveDb(dbToSave?: SqlJsDatabase) {
 }
 
 export async function queryAll<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-  const db = await getDb();
-  const stmt = db.prepare(sql);
-  stmt.bind(params);
-  const results: T[] = [];
-  while (stmt.step()) {
-    results.push(stmt.getAsObject() as T);
+  try {
+    const db = await getDb();
+    const stmt = db.prepare(sql);
+    stmt.bind(params);
+    const results: T[] = [];
+    while (stmt.step()) {
+      results.push(stmt.getAsObject() as T);
+    }
+    stmt.free();
+    return results;
+  } catch (err) {
+    console.error('queryAll error:', err);
+    return [];
   }
-  stmt.free();
-  return results;
 }
 
 export async function queryOne<T = any>(sql: string, params: any[] = []): Promise<T | null> {
@@ -88,19 +115,24 @@ export async function queryOne<T = any>(sql: string, params: any[] = []): Promis
 }
 
 export async function execute(sql: string, params: any[] = []): Promise<{ lastInsertId: number; changes: number }> {
-  const db = await getDb();
-  db.run(sql, params);
-  
-  // Get last insert rowid
-  const res = db.exec("SELECT last_insert_rowid() as id, changes() as count");
-  let lastInsertId = 0;
-  let changes = 0;
-  if (res.length > 0 && res[0].values.length > 0) {
-    lastInsertId = Number(res[0].values[0][0]);
-    changes = Number(res[0].values[0][1]);
+  try {
+    const db = await getDb();
+    db.run(sql, params);
+    
+    // Get last insert rowid
+    const res = db.exec("SELECT last_insert_rowid() as id, changes() as count");
+    let lastInsertId = 0;
+    let changes = 0;
+    if (res.length > 0 && res[0].values.length > 0) {
+      lastInsertId = Number(res[0].values[0][0]);
+      changes = Number(res[0].values[0][1]);
+    }
+    saveDb(db);
+    return { lastInsertId, changes };
+  } catch (err) {
+    console.error('execute error:', err);
+    return { lastInsertId: 0, changes: 0 };
   }
-  saveDb(db);
-  return { lastInsertId, changes };
 }
 
 async function initSchemaAndSeed(db: SqlJsDatabase) {
