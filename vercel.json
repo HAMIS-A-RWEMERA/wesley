@@ -1,15 +1,14 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "server.ts",
-      "use": "@vercel/node"
+      "source": "/(.*)",
+      "destination": "/api/index"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server.ts"
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "{views/**,public/**,database/**,src/assets/**}"
     }
-  ]
+  }
 }

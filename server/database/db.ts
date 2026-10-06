@@ -3,7 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
 
-const DB_FILE = path.join(process.cwd(), 'database', 'wesley.db');
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const BUNDLED_DB_FILE = path.join(process.cwd(), 'database', 'wesley.db');
+const DB_FILE = IS_VERCEL ? path.join('/tmp', 'wesley.db') : BUNDLED_DB_FILE;
 
 let dbInstance: SqlJsDatabase | null = null;
 
@@ -16,11 +18,26 @@ export async function getDb(): Promise<SqlJsDatabase> {
 
   const dir = path.dirname(DB_FILE);
   if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+    } catch (err) {
+      console.warn('Could not create DB directory:', err);
+    }
+  }
+
+  if (IS_VERCEL && !fs.existsSync(DB_FILE) && fs.existsSync(BUNDLED_DB_FILE)) {
+    try {
+      fs.copyFileSync(BUNDLED_DB_FILE, DB_FILE);
+    } catch (err) {
+      console.warn('Could not copy bundled DB to /tmp:', err);
+    }
   }
 
   if (fs.existsSync(DB_FILE)) {
     const filebuffer = fs.readFileSync(DB_FILE);
+    dbInstance = new SQL.Database(filebuffer);
+  } else if (fs.existsSync(BUNDLED_DB_FILE)) {
+    const filebuffer = fs.readFileSync(BUNDLED_DB_FILE);
     dbInstance = new SQL.Database(filebuffer);
   } else {
     dbInstance = new SQL.Database();
@@ -35,9 +52,13 @@ export async function getDb(): Promise<SqlJsDatabase> {
 export function saveDb(dbToSave?: SqlJsDatabase) {
   const target = dbToSave || dbInstance;
   if (!target) return;
-  const data = target.export();
-  const buffer = Buffer.from(data);
-  fs.writeFileSync(DB_FILE, buffer);
+  try {
+    const data = target.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(DB_FILE, buffer);
+  } catch (err) {
+    console.warn('saveDb failed (likely read-only serverless environment):', err);
+  }
 }
 
 export async function queryAll<T = any>(sql: string, params: any[] = []): Promise<T[]> {
@@ -157,10 +178,13 @@ async function initSchemaAndSeed(db: SqlJsDatabase) {
     const hashedPassword = await bcrypt.hash('wesley2026!', 10);
     db.run("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", [
       'Wesley Studio',
-      'admin@wesley.rw',
+      'rwemera30@gmail.com',
       hashedPassword,
       'admin'
     ]);
+  } else {
+    // Ensure admin user email is updated to rwemera30@gmail.com
+    db.run("UPDATE users SET email = 'rwemera30@gmail.com' WHERE email = 'admin@wesley.rw'");
   }
 
   // Seed Services

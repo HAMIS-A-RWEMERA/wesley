@@ -2,10 +2,15 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const uploadDir = IS_VERCEL ? path.join('/tmp', 'uploads') : path.join(process.cwd(), 'public', 'uploads');
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Could not create upload directory:', err);
 }
 
 const storage = multer.diskStorage({
