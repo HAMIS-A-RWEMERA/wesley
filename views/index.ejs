@@ -78,7 +78,7 @@
           <div class="film-poster-wrap">
             <img src="<%= film.poster %>" alt="<%= film.title %>" class="film-poster">
             <div class="film-poster-overlay">
-              <button class="play-btn" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %>" data-is-video="true">
+              <button class="play-btn" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %>" data-is-video="true" data-youtube="<%= film.youtubeUrl || film.video %>">
                 <i class="fa-solid fa-play"></i>
               </button>
             </div>
@@ -94,6 +94,16 @@
                 <i class="fa-solid fa-trophy" style="margin-right: 6px;"></i> <%= film.awards %>
               </div>
             <% } %>
+            <div style="margin-top: 14px; display: flex; gap: 10px; align-items: center;">
+              <button class="btn btn-gold" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %>" data-is-video="true" data-youtube="<%= film.youtubeUrl || film.video %>" style="padding: 5px 12px; font-size: 0.75rem;">
+                <i class="fa-solid fa-play"></i> Watch Here
+              </button>
+              <% if (film.youtubeUrl) { %>
+                <a href="<%= film.youtubeUrl %>" target="_blank" rel="noopener" class="btn btn-outline" style="padding: 5px 12px; font-size: 0.75rem;">
+                  <i class="fa-brands fa-youtube" style="color: #ff0000;"></i> YouTube ↗
+                </a>
+              <% } %>
+            </div>
           </div>
         </div>
       <% }) %>
@@ -121,11 +131,14 @@
 
     <div class="masonry-grid">
       <% featuredPhotos.forEach(photo => { %>
-        <div class="gallery-item" data-category="<%= photo.category %>" data-lightbox data-src="<%= photo.filename %>" data-title="<%= photo.title %>" data-desc="<%= photo.location %> — <%= photo.description %>">
+        <div class="gallery-item" data-category="<%= photo.category %>" data-lightbox data-src="<%= photo.filename %>" data-title="<%= photo.title %>" data-desc="<%= photo.location %> — <%= photo.description %>" data-pixieset="<%= photo.pixiesetUrl || '' %>">
           <img src="<%= photo.filename %>" alt="<%= photo.title %>" class="gallery-img">
           <div class="gallery-caption">
             <h4><%= photo.title %></h4>
             <p><i class="fa-solid fa-location-dot" style="margin-right: 4px;"></i> <%= photo.location %></p>
+            <% if (photo.pixiesetUrl) { %>
+              <span style="font-size: 0.75rem; color: var(--accent-gold); display: block; margin-top: 4px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Pixieset Link</span>
+            <% } %>
           </div>
         </div>
       <% }) %>

@@ -34,6 +34,19 @@ function findDirectory(dirName: string): string {
 const viewsDir = findDirectory('views');
 const publicDir = findDirectory('public');
 const srcDir = findDirectory('src');
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const uploadsDir = IS_VERCEL ? path.join('/tmp', 'uploads') : path.join(publicDir, 'uploads');
+
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn('Uploads directory warning:', e);
+}
+
+// Trust proxy for Vercel and Cloud Run HTTPS termination
+app.set('trust proxy', 1);
 
 // Ensure SQLite database is ready before processing requests
 app.use(async (req: Request, res: Response, next: NextFunction) => {
@@ -56,7 +69,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // set to true in HTTPS production if proxy is enabled
+      secure: 'auto', // Automatically true on HTTPS (Vercel) and false on HTTP localhost
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
   }) as unknown as express.RequestHandler
@@ -70,7 +83,7 @@ app.set('views', viewsDir);
 app.use(express.static(publicDir));
 app.use('/public', express.static(publicDir));
 app.use('/src', express.static(srcDir));
-app.use('/uploads', express.static(path.join(publicDir, 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
 
 // Routes
 app.use('/', publicRoutes);

@@ -29,7 +29,7 @@
             <div class="film-poster-wrap">
               <img src="<%= film.poster %>" alt="<%= film.title %>" class="film-poster">
               <div class="film-poster-overlay">
-                <button class="play-btn" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %> • <%= film.year %>" data-is-video="true">
+                <button class="play-btn" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %> • <%= film.year %>" data-is-video="true" data-youtube="<%= film.youtubeUrl || film.video %>">
                   <i class="fa-solid fa-play"></i>
                 </button>
               </div>
@@ -48,6 +48,17 @@
                   <i class="fa-solid fa-trophy" style="margin-right: 6px;"></i> <%= film.awards %>
                 </div>
               <% } %>
+
+              <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <button class="btn btn-gold" data-lightbox data-src="<%= film.video || 'https://www.youtube.com/embed/dQw4w9WgXcQ' %>" data-title="<%= film.title %>" data-desc="<%= film.genre %> • <%= film.duration %> • <%= film.year %>" data-is-video="true" data-youtube="<%= film.youtubeUrl || film.video %>" style="padding: 6px 14px; font-size: 0.8rem;">
+                  <i class="fa-solid fa-play"></i> Play on Site
+                </button>
+                <% if (film.youtubeUrl) { %>
+                  <a href="<%= film.youtubeUrl %>" target="_blank" rel="noopener" class="btn btn-outline" style="padding: 6px 14px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-brands fa-youtube" style="color: #ff0000;"></i> YouTube ↗
+                  </a>
+                <% } %>
+              </div>
             </div>
           </div>
         <% }) %>
