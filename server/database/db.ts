@@ -14,7 +14,16 @@ export async function getDb(): Promise<SqlJsDatabase> {
     return dbInstance;
   }
 
-  const SQL = await initSqlJs();
+  const localWasm = path.join(process.cwd(), 'database', 'sql-wasm.wasm');
+  const nodeModulesWasm = path.join(process.cwd(), 'node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
+  let wasmBinary: Buffer | undefined;
+  if (fs.existsSync(localWasm)) {
+    wasmBinary = fs.readFileSync(localWasm);
+  } else if (fs.existsSync(nodeModulesWasm)) {
+    wasmBinary = fs.readFileSync(nodeModulesWasm);
+  }
+
+  const SQL = await initSqlJs(wasmBinary ? { wasmBinary } : {});
 
   const dir = path.dirname(DB_FILE);
   if (!fs.existsSync(dir)) {
