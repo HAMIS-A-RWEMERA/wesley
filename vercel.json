@@ -3,11 +3,11 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api/index"
+      "dest": "/api"
     }
   ],
   "functions": {
-    "api/index.ts": {
+    "api/**": {
       "includeFiles": [
         "views/**",
         "public/**",
