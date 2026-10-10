@@ -1,20 +1,8 @@
 {
-  "version": 2,
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/api"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "functions": {
-    "api/**": {
-      "includeFiles": [
-        "views/**",
-        "public/**",
-        "database/**",
-        "src/assets/**",
-        "node_modules/sql.js/dist/**"
-      ]
-    }
-  }
+  ]
 }
