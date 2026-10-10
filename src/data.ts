@@ -89,6 +89,7 @@ export interface SiteSettings {
   workingHours: string;
   profileImage: string;
   heroBg: string;
+  adminPassword: string;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -112,7 +113,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   address: 'KG 7 Ave, Kacyiru, Kigali, Rwanda',
   workingHours: 'Monday – Saturday: 08:30 AM – 06:00 PM (GMT+2)',
   profileImage: '/src/assets/images/wesley_profile_1785877494136.jpg',
-  heroBg: '/src/assets/images/hero_background_1785877478689.jpg'
+  heroBg: '/src/assets/images/hero_background_1785877478689.jpg',
+  adminPassword: 'wesley2026!'
 };
 
 export const STUDIO_INFO = {

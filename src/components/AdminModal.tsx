@@ -24,6 +24,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
   const [emailInput, setEmailInput] = useState('rwemera30@gmail.com');
   const [passwordInput, setPasswordInput] = useState('wesley2026!');
   const [loginError, setLoginError] = useState('');
+
+  // Password Update State
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
   
   // Tabs: bookings | messages | suggestions | services | content | media
   const [activeTab, setActiveTab] = useState<'bookings' | 'messages' | 'suggestions' | 'services' | 'content' | 'media'>('bookings');
@@ -79,7 +83,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
     setServices(getStoredServices());
     setFilms(getStoredFilms());
     setPhotos(getStoredPhotos());
-    setSettings(getStoredSettings());
+    const currentSettings = getStoredSettings();
+    setSettings(currentSettings);
+    setEmailInput(currentSettings.email);
+    setPasswordInput(currentSettings.adminPassword || 'wesley2026!');
   };
 
   useEffect(() => {
@@ -92,19 +99,39 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
 
   const triggerSaveAlert = (msg: string) => {
     setSaveSuccessMsg(msg);
-    setTimeout(() => setSaveSuccessMsg(''), 4000);
+    setTimeout(() => setSaveSuccessMsg(''), 5000);
     if (onContentUpdated) onContentUpdated();
   };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (emailInput.trim().toLowerCase() === settings.email.toLowerCase() && passwordInput === 'wesley2026!') {
+    const currentSettings = getStoredSettings();
+    const activePassword = currentSettings.adminPassword || 'wesley2026!';
+    if (emailInput.trim().toLowerCase() === currentSettings.email.toLowerCase() && passwordInput === activePassword) {
       setIsAuthenticated(true);
       setLoginError('');
       refreshAllData();
     } else {
-      setLoginError(`Invalid credentials. Use ${settings.email} / wesley2026!`);
+      setLoginError(`Invalid credentials. Check your email and password.`);
     }
+  };
+
+  const handleUpdatePassword = () => {
+    if (!newPasswordInput || newPasswordInput.length < 6) {
+      alert('Password must be at least 6 characters.');
+      return;
+    }
+    if (newPasswordInput !== confirmPasswordInput) {
+      alert('Passwords do not match. Please re-enter.');
+      return;
+    }
+    const updated = { ...settings, adminPassword: newPasswordInput };
+    setSettings(updated);
+    saveStoredSettings(updated);
+    setPasswordInput(newPasswordInput);
+    setNewPasswordInput('');
+    setConfirmPasswordInput('');
+    triggerSaveAlert(`Security password changed successfully! Your new password is now active for future logins.`);
   };
 
   // Open Decision Modal with pre-filled message
@@ -310,8 +337,8 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
             </form>
 
             <div className="mt-8 pt-4 border-t border-[#1c1c24] text-center text-xs text-[#6e6e7c]">
-              <span>Default Credentials: </span>
-              <code className="text-[#d4af37] font-mono">{settings.email} / wesley2026!</code>
+              <span>Active Portal Credentials: </span>
+              <code className="text-[#d4af37] font-mono">{settings.email} / {settings.adminPassword || 'wesley2026!'}</code>
             </div>
           </div>
         ) : (
@@ -816,7 +843,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">
-                            Official Email
+                            Official Email *
                           </label>
                           <input
                             type="email"
@@ -828,7 +855,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
 
                         <div>
                           <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">
-                            Phone / WhatsApp
+                            Phone / WhatsApp *
                           </label>
                           <input
                             type="text"
@@ -837,6 +864,63 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                             className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
                           />
                         </div>
+                      </div>
+
+                      {/* Clarification Box on Email Changes */}
+                      <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs leading-relaxed space-y-1">
+                        <div className="font-bold flex items-center gap-1.5 text-[#d4af37]">
+                          <ShieldCheck className="w-4 h-4 shrink-0" />
+                          <span>IMPORTANT NOTICE ON CHANGING EMAIL:</span>
+                        </div>
+                        <p className="text-[11px] text-[#e0e0ec]">
+                          Changing this email directly updates:
+                        </p>
+                        <ul className="list-disc list-inside text-[11px] space-y-0.5 text-[#d4af37]">
+                          <li><strong>CMS Login Email:</strong> You will use this new email to log into this Director Portal.</li>
+                          <li><strong>Booking & Suggestion Inbox:</strong> All new client shoot reservations and ideas will be emailed to this address.</li>
+                          <li><strong>Public Website Display:</strong> Automatically updates the contact email across the entire website and footer.</li>
+                        </ul>
+                      </div>
+
+                      {/* Change Password Card */}
+                      <div className="p-4 rounded-xl bg-[#161622] border border-[#2a2a38] space-y-3">
+                        <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider">
+                          <Lock className="w-3.5 h-3.5 text-[#d4af37]" />
+                          <span>Change Studio CMS Password</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              New Password
+                            </label>
+                            <input
+                              type="password"
+                              value={newPasswordInput}
+                              onChange={(e) => setNewPasswordInput(e.target.value)}
+                              placeholder="Minimum 6 characters"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              Confirm New Password
+                            </label>
+                            <input
+                              type="password"
+                              value={confirmPasswordInput}
+                              onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                              placeholder="Confirm password"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleUpdatePassword}
+                          className="px-4 py-2 rounded-lg bg-[#22222e] hover:bg-[#d4af37] text-[#d4af37] hover:text-black text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                        >
+                          Save New Password
+                        </button>
                       </div>
                     </div>
                   </div>

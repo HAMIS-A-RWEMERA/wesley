@@ -69,6 +69,13 @@ export const Contact: React.FC = () => {
 
     saveSuggestion(newSuggestion);
     setSuggestionSubmitted(true);
+
+    // Directly prepare and trigger email notification to Director Wesley at studio email
+    const emailSubject = encodeURIComponent(`[Studio Suggestion Box] ${sugCategory.toUpperCase().replace('_', ' ')} from ${sugName || 'Anonymous'}`);
+    const emailBody = encodeURIComponent(
+      `Hello Wesley,\n\nA new suggestion has been submitted to your studio website suggestion box:\n\nCategory: ${sugCategory}\nContributor: ${sugName || 'Anonymous'} (${sugEmail || 'No email provided'})\nDate: ${new Date().toLocaleDateString()}\n\nSuggestion Message:\n"${suggestionText}"\n\nThis suggestion has also been recorded in your Studio CMS Dashboard for your review.`
+    );
+    window.open(`mailto:${STUDIO_INFO.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
   };
 
   return (
