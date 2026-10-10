@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { INITIAL_PHOTOS, Photo } from '../data';
+import { getStoredPhotos, Photo } from '../data';
 import { MapPin, Maximize2, Tag } from 'lucide-react';
 
 interface LandscapeProps {
@@ -9,7 +9,8 @@ interface LandscapeProps {
 
 export const Landscape: React.FC<LandscapeProps> = ({ onSelectPhoto, onNavigateBooking }) => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const landscapePhotos = INITIAL_PHOTOS.filter(p => p.category === 'landscape');
+  const photos = getStoredPhotos();
+  const landscapePhotos = photos.filter(p => p.category === 'landscape');
 
   const filters = [
     { id: 'all', label: 'All Landscapes' },

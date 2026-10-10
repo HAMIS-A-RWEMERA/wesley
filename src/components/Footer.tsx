@@ -147,7 +147,17 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmin }) => {
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-[#d4af37] shrink-0" />
-                <span>{STUDIO_INFO.phone}</span>
+                <div className="flex items-center gap-2">
+                  <span>{STUDIO_INFO.phone}</span>
+                  <a
+                    href={`https://wa.me/${STUDIO_INFO.whatsapp}?text=Hello%20Wesley%2C%20I%20am%20interested%20in%20connecting`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] px-2 py-0.5 rounded-full bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-black font-semibold transition-colors"
+                  >
+                    WhatsApp
+                  </a>
+                </div>
               </div>
             </div>
 

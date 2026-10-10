@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { INITIAL_FILMS, Film } from '../data';
+import { getStoredFilms, Film } from '../data';
 import { Play, Award, Clock, Calendar, Filter } from 'lucide-react';
 
 interface FilmsProps {
@@ -9,6 +9,7 @@ interface FilmsProps {
 
 export const Films: React.FC<FilmsProps> = ({ onSelectFilm, onNavigateBooking }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const films = getStoredFilms();
 
   const categories = [
     { id: 'all', label: 'All Cinema' },
@@ -18,8 +19,8 @@ export const Films: React.FC<FilmsProps> = ({ onSelectFilm, onNavigateBooking })
   ];
 
   const filteredFilms = activeCategory === 'all'
-    ? INITIAL_FILMS
-    : INITIAL_FILMS.filter(f => f.category === activeCategory);
+    ? films
+    : films.filter(f => f.category === activeCategory);
 
   return (
     <div className="pt-28 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">

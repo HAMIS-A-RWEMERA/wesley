@@ -46,6 +46,8 @@ export interface Booking {
   location: string;
   notes: string;
   status: 'pending' | 'confirmed' | 'cancelled';
+  directorNote?: string;
+  decisionDate?: string;
   createdAt: string;
 }
 
@@ -59,18 +61,72 @@ export interface Message {
   createdAt: string;
 }
 
-export const STUDIO_INFO = {
-  name: 'WESLEY STUDIO',
-  creator: 'Wesley',
-  role: 'African Filmmaker & Visual Storyteller',
-  bio: 'Wesley is a renowned Rwandan director, cinematographer, and fine-art photographer based in Kigali, Rwanda. Dedicated to authentic African narratives, his documentary and narrative films have screened at major festivals including FESPACO, Durban International Film Festival, and Silicon Valley African Film Festival.',
+export interface Suggestion {
+  id: string;
+  name: string;
+  email: string;
+  category: 'film_idea' | 'website_feedback' | 'collaboration' | 'general';
+  suggestion: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
+export interface SiteSettings {
+  heroTagline: string;
+  heroHeading: string;
+  heroSubheading: string;
+  heroLaurels: string[];
+  directorQuote: string;
+  directorBio1: string;
+  directorBio2: string;
+  studioName: string;
+  creatorName: string;
+  creatorRole: string;
+  email: string;
+  phone: string;
+  whatsapp: string;
+  address: string;
+  workingHours: string;
+  profileImage: string;
+  heroBg: string;
+}
+
+export const DEFAULT_SITE_SETTINGS: SiteSettings = {
+  heroTagline: 'Kigali, Rwanda • African Cinema & Fine Art',
+  heroHeading: 'STORIES OF LIGHT & LEGACY',
+  heroSubheading: 'Crafting world-class African documentary cinema, narrative films, and timeless fine-art portraiture from the heart of Rwanda.',
+  heroLaurels: [
+    'FESPACO Official Selection',
+    'Durban Int. Film Festival Award',
+    'Silicon Valley African Film Festival Winner'
+  ],
+  directorQuote: 'CINEMA IS OUR MEMORY, OUR RESILIENCE, AND OUR HORIZON.',
+  directorBio1: 'Every frame created at Wesley Studio honors the complexity, dignity, and beauty of African lived experiences. We believe in cinema that does not merely observe Africa through an external gaze, but speaks from within its fertile soil, ancient drums, and vibrant city avenues.',
+  directorBio2: 'Equipped with Netflix-certified cinema cameras and master prime optics, we collaborate with international broadcasters, humanitarian initiatives, and private patrons seeking immortal storytelling.',
+  studioName: 'WESLEY STUDIO',
+  creatorName: 'Wesley',
+  creatorRole: 'African Filmmaker & Visual Storyteller',
   email: 'rwemera30@gmail.com',
-  phone: '+250 788 000 123',
-  whatsapp: '+250788000123',
+  phone: '+250 792 087 787',
+  whatsapp: '250792087787',
   address: 'KG 7 Ave, Kacyiru, Kigali, Rwanda',
   workingHours: 'Monday – Saturday: 08:30 AM – 06:00 PM (GMT+2)',
   profileImage: '/src/assets/images/wesley_profile_1785877494136.jpg',
-  heroBg: '/src/assets/images/hero_background_1785877478689.jpg',
+  heroBg: '/src/assets/images/hero_background_1785877478689.jpg'
+};
+
+export const STUDIO_INFO = {
+  get name() { return getStoredSettings().studioName; },
+  get creator() { return getStoredSettings().creatorName; },
+  get role() { return getStoredSettings().creatorRole; },
+  get bio() { return getStoredSettings().directorBio1; },
+  get email() { return getStoredSettings().email; },
+  get phone() { return getStoredSettings().phone; },
+  get whatsapp() { return getStoredSettings().whatsapp; },
+  get address() { return getStoredSettings().address; },
+  get workingHours() { return getStoredSettings().workingHours; },
+  get profileImage() { return getStoredSettings().profileImage; },
+  get heroBg() { return getStoredSettings().heroBg; },
   socials: {
     instagram: 'https://instagram.com',
     vimeo: 'https://vimeo.com',
@@ -116,7 +172,7 @@ export const INITIAL_SERVICES: Service[] = [
     tagline: 'Transformative visual identities for modern Africa',
     description: 'Cinematic commercials, architectural showcases, and brand narrative films tailored for broadcast, digital campaigns, and executive pitch decks.',
     duration: 'Full Production Cycle',
-    price: '$800+',
+    price: '$800',
     features: [
       'Storyboarding & visual treatments',
       'Dedicated director & sound engineer',
@@ -311,6 +367,8 @@ export const INITIAL_BOOKINGS: Booking[] = [
     location: 'Kigali Studio',
     notes: 'Editorial portraits for upcoming theatre premiere playbill and press kit.',
     status: 'confirmed',
+    directorNote: 'Confirmed! Studio lighting and makeup artist have been booked for 09:45 AM arrival.',
+    decisionDate: '2026-10-02',
     createdAt: '2026-10-01'
   },
   {
@@ -350,12 +408,153 @@ export const INITIAL_MESSAGES: Message[] = [
   }
 ];
 
-// LocalStorage Persistence Helpers
-const BOOKINGS_KEY = 'wesley_studio_bookings_v2';
-const MESSAGES_KEY = 'wesley_studio_messages_v2';
-const FILMS_KEY = 'wesley_studio_films_v2';
-const PHOTOS_KEY = 'wesley_studio_photos_v2';
+export const INITIAL_SUGGESTIONS: Suggestion[] = [
+  {
+    id: 'SUG-1',
+    name: 'Patrick Habineza',
+    email: 'patrick@kigalimedia.rw',
+    category: 'film_idea',
+    suggestion: 'It would be amazing to see a documentary exploring the traditional Inyambo royal cattle breeders in Nyanza!',
+    createdAt: '2026-10-05',
+    isRead: false
+  },
+  {
+    id: 'SUG-2',
+    name: 'Sarah Jenkins',
+    email: 'sjenkins@artsfoundation.org',
+    category: 'collaboration',
+    suggestion: 'Loved the portrait series. We would love to sponsor an exhibition tour in Nairobi and Kigali.',
+    createdAt: '2026-10-07',
+    isRead: true
+  }
+];
 
+// LocalStorage Keys
+const SETTINGS_KEY = 'wesley_studio_settings_v3';
+const SERVICES_KEY = 'wesley_studio_services_v3';
+const FILMS_KEY = 'wesley_studio_films_v3';
+const PHOTOS_KEY = 'wesley_studio_photos_v3';
+const BOOKINGS_KEY = 'wesley_studio_bookings_v3';
+const MESSAGES_KEY = 'wesley_studio_messages_v3';
+const SUGGESTIONS_KEY = 'wesley_studio_suggestions_v3';
+
+// Site Settings
+export function getStoredSettings(): SiteSettings {
+  try {
+    const data = localStorage.getItem(SETTINGS_KEY);
+    return data ? { ...DEFAULT_SITE_SETTINGS, ...JSON.parse(data) } : DEFAULT_SITE_SETTINGS;
+  } catch {
+    return DEFAULT_SITE_SETTINGS;
+  }
+}
+
+export function saveStoredSettings(settings: SiteSettings): SiteSettings {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('Failed to save settings:', e);
+  }
+  return settings;
+}
+
+// Services & Prices
+export function getStoredServices(): Service[] {
+  try {
+    const data = localStorage.getItem(SERVICES_KEY);
+    return data ? JSON.parse(data) : INITIAL_SERVICES;
+  } catch {
+    return INITIAL_SERVICES;
+  }
+}
+
+export function saveStoredServices(services: Service[]): Service[] {
+  try {
+    localStorage.setItem(SERVICES_KEY, JSON.stringify(services));
+  } catch (e) {
+    console.error('Failed to save services:', e);
+  }
+  return services;
+}
+
+// Films
+export function getStoredFilms(): Film[] {
+  try {
+    const data = localStorage.getItem(FILMS_KEY);
+    return data ? JSON.parse(data) : INITIAL_FILMS;
+  } catch {
+    return INITIAL_FILMS;
+  }
+}
+
+export function saveFilm(film: Film): Film[] {
+  const current = getStoredFilms();
+  const existingIdx = current.findIndex(f => f.id === film.id);
+  let updated: Film[];
+  if (existingIdx >= 0) {
+    updated = [...current];
+    updated[existingIdx] = film;
+  } else {
+    updated = [film, ...current];
+  }
+  try {
+    localStorage.setItem(FILMS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save film:', e);
+  }
+  return updated;
+}
+
+export function deleteFilm(filmId: number): Film[] {
+  const current = getStoredFilms();
+  const updated = current.filter(f => f.id !== filmId);
+  try {
+    localStorage.setItem(FILMS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to delete film:', e);
+  }
+  return updated;
+}
+
+// Photos
+export function getStoredPhotos(): Photo[] {
+  try {
+    const data = localStorage.getItem(PHOTOS_KEY);
+    return data ? JSON.parse(data) : INITIAL_PHOTOS;
+  } catch {
+    return INITIAL_PHOTOS;
+  }
+}
+
+export function savePhoto(photo: Photo): Photo[] {
+  const current = getStoredPhotos();
+  const existingIdx = current.findIndex(p => p.id === photo.id);
+  let updated: Photo[];
+  if (existingIdx >= 0) {
+    updated = [...current];
+    updated[existingIdx] = photo;
+  } else {
+    updated = [photo, ...current];
+  }
+  try {
+    localStorage.setItem(PHOTOS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save photo:', e);
+  }
+  return updated;
+}
+
+export function deletePhoto(photoId: number): Photo[] {
+  const current = getStoredPhotos();
+  const updated = current.filter(p => p.id !== photoId);
+  try {
+    localStorage.setItem(PHOTOS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to delete photo:', e);
+  }
+  return updated;
+}
+
+// Bookings
 export function getStoredBookings(): Booking[] {
   try {
     const data = localStorage.getItem(BOOKINGS_KEY);
@@ -376,9 +575,18 @@ export function saveBooking(booking: Booking): Booking[] {
   return updated;
 }
 
-export function updateBookingStatus(id: string, status: 'confirmed' | 'pending' | 'cancelled'): Booking[] {
+export function updateBookingWithDecision(
+  id: string, 
+  status: 'confirmed' | 'pending' | 'cancelled',
+  directorNote: string
+): Booking[] {
   const list = getStoredBookings();
-  const updated = list.map(b => b.id === id ? { ...b, status } : b);
+  const updated = list.map(b => b.id === id ? { 
+    ...b, 
+    status, 
+    directorNote, 
+    decisionDate: new Date().toISOString().split('T')[0] 
+  } : b);
   try {
     localStorage.setItem(BOOKINGS_KEY, JSON.stringify(updated));
   } catch (e) {
@@ -387,6 +595,7 @@ export function updateBookingStatus(id: string, status: 'confirmed' | 'pending' 
   return updated;
 }
 
+// Messages
 export function getStoredMessages(): Message[] {
   try {
     const data = localStorage.getItem(MESSAGES_KEY);
@@ -414,6 +623,38 @@ export function markMessageRead(id: string): Message[] {
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(updated));
   } catch (e) {
     console.error('Storage update message error:', e);
+  }
+  return updated;
+}
+
+// Suggestions Box
+export function getStoredSuggestions(): Suggestion[] {
+  try {
+    const data = localStorage.getItem(SUGGESTIONS_KEY);
+    return data ? JSON.parse(data) : INITIAL_SUGGESTIONS;
+  } catch {
+    return INITIAL_SUGGESTIONS;
+  }
+}
+
+export function saveSuggestion(sug: Suggestion): Suggestion[] {
+  const list = getStoredSuggestions();
+  const updated = [sug, ...list];
+  try {
+    localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Storage save suggestion error:', e);
+  }
+  return updated;
+}
+
+export function markSuggestionRead(id: string): Suggestion[] {
+  const list = getStoredSuggestions();
+  const updated = list.map(s => s.id === id ? { ...s, isRead: true } : s);
+  try {
+    localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Storage update suggestion error:', e);
   }
   return updated;
 }

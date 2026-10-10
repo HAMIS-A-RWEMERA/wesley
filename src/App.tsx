@@ -4,6 +4,7 @@ import { Footer } from './components/Footer';
 import { VideoModal } from './components/VideoModal';
 import { LightboxModal } from './components/LightboxModal';
 import { AdminModal } from './components/AdminModal';
+import { WhatsAppFloatingButton } from './components/WhatsAppFloatingButton';
 
 import { Home } from './pages/Home';
 import { About } from './pages/About';
@@ -21,6 +22,7 @@ export default function App() {
   const [activeLightboxPhoto, setActiveLightboxPhoto] = useState<Photo | null>(null);
   const [adminModalOpen, setAdminModalOpen] = useState<boolean>(false);
   const [preselectedBookingService, setPreselectedBookingService] = useState<string | undefined>(undefined);
+  const [contentVersion, setContentVersion] = useState<number>(0);
 
   // Sync with browser hash if user opens direct link like #booking, #films, #admin
   useEffect(() => {
@@ -50,7 +52,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0c0c0e] text-[#f2f2f4]">
+    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#0c0c0e] text-[#f2f2f4]">
       {/* Sticky Navigation Bar */}
       <Navbar
         currentPage={currentPage}
@@ -132,7 +134,11 @@ export default function App() {
       <AdminModal
         isOpen={adminModalOpen}
         onClose={() => setAdminModalOpen(false)}
+        onContentUpdated={() => setContentVersion(v => v + 1)}
       />
+
+      {/* Persistent Floating WhatsApp Quick-Chat Widget */}
+      <WhatsAppFloatingButton />
     </div>
   );
 }

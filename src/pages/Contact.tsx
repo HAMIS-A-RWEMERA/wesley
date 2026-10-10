@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
-import { STUDIO_INFO, saveMessage, Message as MessageType } from '../data';
-import { MapPin, Mail, Phone, Clock, Send, CheckCircle2, MessageSquare } from 'lucide-react';
+import { 
+  STUDIO_INFO, saveMessage, saveSuggestion, 
+  Message as MessageType, Suggestion as SuggestionType 
+} from '../data';
+import { 
+  MapPin, Mail, Phone, Clock, Send, CheckCircle2, 
+  MessageSquare, Lightbulb, MessageCircle 
+} from 'lucide-react';
 
 export const Contact: React.FC = () => {
+  const [activeForm, setActiveForm] = useState<'inquiry' | 'suggestion'>('inquiry');
+
+  // Inquiry state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [inquirySubmitted, setInquirySubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Suggestion state
+  const [sugName, setSugName] = useState('');
+  const [sugEmail, setSugEmail] = useState('');
+  const [sugCategory, setSugCategory] = useState<'film_idea' | 'website_feedback' | 'collaboration' | 'general'>('film_idea');
+  const [suggestionText, setSuggestionText] = useState('');
+  const [suggestionSubmitted, setSuggestionSubmitted] = useState(false);
+
+  const handleInquirySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!name || !email || !subject || !message) {
       alert('Please fill in all fields.');
       return;
@@ -28,7 +43,32 @@ export const Contact: React.FC = () => {
     };
 
     saveMessage(newMessage);
-    setSubmitted(true);
+    setInquirySubmitted(true);
+
+    // Also trigger direct email draft to rwemera30@gmail.com
+    const mailtoUrl = `mailto:${STUDIO_INFO.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
+    window.open(mailtoUrl, '_blank');
+  };
+
+  const handleSuggestionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!suggestionText) {
+      alert('Please enter your suggestion.');
+      return;
+    }
+
+    const newSuggestion: SuggestionType = {
+      id: `SUG-${Date.now()}`,
+      name: sugName || 'Anonymous Contributor',
+      email: sugEmail || '',
+      category: sugCategory,
+      suggestion: suggestionText,
+      createdAt: new Date().toISOString().split('T')[0],
+      isRead: false
+    };
+
+    saveSuggestion(newSuggestion);
+    setSuggestionSubmitted(true);
   };
 
   return (
@@ -37,13 +77,13 @@ export const Contact: React.FC = () => {
       {/* Header Banner */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-xs uppercase font-bold tracking-[0.25em] text-[#d4af37]">
-          GET IN TOUCH
+          DIRECT CONNECT
         </span>
         <h1 className="font-cinzel text-4xl sm:text-6xl font-extrabold text-white tracking-wide">
-          CONTACT WESLEY STUDIO
+          CONTACT & SUGGESTIONS
         </h1>
         <p className="text-sm sm:text-base text-[#9e9eb0] leading-relaxed">
-          Inquiries for film commissions, co-productions, documentary shoots, press interviews, and fine-art print acquisitions across East Africa.
+          Reach Director Wesley directly for film commissions, co-productions, press inquiries, or share your creative concepts in our studio suggestion box.
         </p>
       </div>
 
@@ -77,11 +117,11 @@ export const Contact: React.FC = () => {
                 <Mail className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h4 className="font-bold text-white text-sm">Official Email</h4>
+                <h4 className="font-bold text-white text-sm">Official Studio Email</h4>
                 <a href={`mailto:${STUDIO_INFO.email}`} className="text-xs text-[#d4af37] hover:underline block font-semibold">
                   {STUDIO_INFO.email}
                 </a>
-                <p className="text-[11px] text-[#707080]">Monitored daily by Director Wesley</p>
+                <p className="text-[11px] text-[#707080]">Directly monitored by Director Wesley</p>
               </div>
             </div>
 
@@ -93,7 +133,7 @@ export const Contact: React.FC = () => {
                 <h4 className="font-bold text-white text-sm">Telephone & WhatsApp</h4>
                 <p className="text-xs text-white font-mono">{STUDIO_INFO.phone}</p>
                 <a 
-                  href={`https://wa.me/${STUDIO_INFO.whatsapp}`} 
+                  href={`https://wa.me/${STUDIO_INFO.whatsapp}?text=Hello%20Wesley%2C%20I%20am%20interested%20in%20discussing%20a%20project`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="text-[11px] text-[#25D366] hover:underline block"
@@ -125,127 +165,259 @@ export const Contact: React.FC = () => {
           </div>
         </div>
 
-        {/* Contact Form Column (7 cols) */}
+        {/* Form Column with Toggle (7 cols) */}
         <div className="lg:col-span-7 bg-[#111116] border border-[#22222a] rounded-3xl p-8 sm:p-12 space-y-6">
           
-          <div>
-            <span className="text-xs uppercase font-bold tracking-widest text-[#d4af37]">
-              DIRECT MESSAGE
-            </span>
-            <h3 className="font-cinzel text-2xl font-bold text-white mt-1">
-              SEND INQUIRY TO DIRECTOR WESLEY
-            </h3>
-            <p className="text-xs text-[#8e8e9c]">
-              Fill out the form below and our studio team will respond promptly.
-            </p>
+          {/* Form Switcher */}
+          <div className="flex items-center gap-3 p-1.5 rounded-xl bg-[#0c0c10] border border-[#202028]">
+            <button
+              onClick={() => setActiveForm('inquiry')}
+              className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                activeForm === 'inquiry'
+                  ? 'bg-[#d4af37] text-black shadow-[0_0_20px_rgba(212,175,55,0.3)]'
+                  : 'text-[#9e9ea8] hover:text-white'
+              }`}
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>Studio Inquiry Form</span>
+            </button>
+
+            <button
+              onClick={() => setActiveForm('suggestion')}
+              className={`flex-1 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                activeForm === 'suggestion'
+                  ? 'bg-[#d4af37] text-black shadow-[0_0_20px_rgba(212,175,55,0.3)]'
+                  : 'text-[#9e9ea8] hover:text-white'
+              }`}
+            >
+              <Lightbulb className="w-3.5 h-3.5" />
+              <span>Suggestion & Idea Box</span>
+            </button>
           </div>
 
-          {submitted ? (
-            <div className="p-8 rounded-2xl bg-[#161622] border border-[#d4af37] text-center space-y-4 animate-in fade-in">
-              <div className="w-12 h-12 rounded-full bg-[#d4af37]/20 border border-[#d4af37] flex items-center justify-center text-[#d4af37] mx-auto">
-                <CheckCircle2 className="w-6 h-6" />
+          {/* Form 1: Studio Inquiry Form */}
+          {activeForm === 'inquiry' ? (
+            <div className="space-y-6">
+              <div>
+                <span className="text-xs uppercase font-bold tracking-widest text-[#d4af37]">
+                  DIRECT MESSAGE
+                </span>
+                <h3 className="font-cinzel text-2xl font-bold text-white mt-1">
+                  SEND MESSAGE TO WESLEY
+                </h3>
+                <p className="text-xs text-[#8e8e9c]">
+                  Delivers straight to <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong> and studio CMS.
+                </p>
               </div>
-              <h4 className="font-cinzel text-xl font-bold text-white">
-                Message Sent Successfully!
-              </h4>
-              <p className="text-xs text-[#a0a0b0]">
-                Thank you, {name}. Your inquiry has been forwarded to Wesley at <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>.
-              </p>
-              <div className="pt-2">
-                <a
-                  href={`mailto:${STUDIO_INFO.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`}
-                  className="px-6 py-2.5 rounded-full bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:bg-[#f3e5ab] transition-colors inline-block"
-                >
-                  Send via Email Client Also
-                </a>
-              </div>
-              <button
-                onClick={() => {
-                  setSubmitted(false);
-                  setName('');
-                  setEmail('');
-                  setSubject('');
-                  setMessage('');
-                }}
-                className="text-xs text-[#707080] hover:text-white underline cursor-pointer pt-2 block mx-auto"
-              >
-                Send Another Message
-              </button>
+
+              {inquirySubmitted ? (
+                <div className="p-8 rounded-2xl bg-[#161622] border border-[#d4af37] text-center space-y-4 animate-in fade-in">
+                  <div className="w-12 h-12 rounded-full bg-[#d4af37]/20 border border-[#d4af37] flex items-center justify-center text-[#d4af37] mx-auto">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-cinzel text-xl font-bold text-white">
+                    Message Sent Successfully!
+                  </h4>
+                  <p className="text-xs text-[#a0a0b0]">
+                    Thank you, {name}. Your inquiry has been registered and emailed to Wesley at <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setInquirySubmitted(false);
+                      setName('');
+                      setEmail('');
+                      setSubject('');
+                      setMessage('');
+                    }}
+                    className="text-xs text-[#707080] hover:text-white underline cursor-pointer pt-2 block mx-auto"
+                  >
+                    Send Another Message
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleInquirySubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                        Your Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Jean-Luc Habimana"
+                        className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="name@organization.com"
+                        className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                      Subject *
+                    </label>
+                    <input
+                      type="text"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      placeholder="e.g. Documentary Co-production / Fine-Art Commission"
+                      className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                      Message Body *
+                    </label>
+                    <textarea
+                      rows={5}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Tell us about your project timeline, location, budget scope, or specific inquiry..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <span className="text-xs text-[#8e8e9c]">
+                      Direct Recipient: <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>
+                    </span>
+
+                    <button
+                      type="submit"
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8c2c] text-black font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Direct Message</span>
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
-                    Your Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Jean-Luc Habimana"
-                    className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@organization.com"
-                    className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
-                    required
-                  />
-                </div>
-              </div>
-
+            /* Form 2: Suggestion & Creative Idea Box */
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
-                  Subject *
-                </label>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. Documentary Co-production / Fine-Art Commission"
-                  className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
-                  Message Body *
-                </label>
-                <textarea
-                  rows={5}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Tell us about your project timeline, location, budget scope, or specific inquiry..."
-                  className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span className="text-xs text-[#8e8e9c]">
-                  Recipient: <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>
+                <span className="text-xs uppercase font-bold tracking-widest text-[#d4af37]">
+                  COMMUNITY VOICE
                 </span>
-
-                <button
-                  type="submit"
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8c2c] text-black font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Direct Message</span>
-                </button>
+                <h3 className="font-cinzel text-2xl font-bold text-white mt-1">
+                  STUDIO SUGGESTION & FILM IDEA BOX
+                </h3>
+                <p className="text-xs text-[#8e8e9c]">
+                  Have an untold Rwandan story, an exhibition concept, or creative suggestion for Wesley? Drop it in our suggestion box for review in the director CMS!
+                </p>
               </div>
-            </form>
+
+              {suggestionSubmitted ? (
+                <div className="p-8 rounded-2xl bg-[#161622] border border-[#d4af37] text-center space-y-4 animate-in fade-in">
+                  <div className="w-12 h-12 rounded-full bg-[#d4af37]/20 border border-[#d4af37] flex items-center justify-center text-[#d4af37] mx-auto">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-cinzel text-xl font-bold text-white">
+                    Thank You for Your Suggestion!
+                  </h4>
+                  <p className="text-xs text-[#a0a0b0]">
+                    Your idea has been safely placed in Director Wesley's suggestion box. We deeply appreciate your creative voice and perspective.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSuggestionSubmitted(false);
+                      setSuggestionText('');
+                    }}
+                    className="text-xs text-[#707080] hover:text-white underline cursor-pointer pt-2 block mx-auto"
+                  >
+                    Submit Another Idea
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSuggestionSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                        Your Name (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={sugName}
+                        onChange={(e) => setSugName(e.target.value)}
+                        placeholder="Anonymous or your name"
+                        className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                        Email (Optional, if you wish for a reply)
+                      </label>
+                      <input
+                        type="email"
+                        value={sugEmail}
+                        onChange={(e) => setSugEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                      Suggestion Category
+                    </label>
+                    <select
+                      value={sugCategory}
+                      onChange={(e) => setSugCategory(e.target.value as any)}
+                      className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none cursor-pointer"
+                    >
+                      <option value="film_idea">Untold African Story / Documentary Film Idea</option>
+                      <option value="collaboration">Exhibition / Artistic Collaboration Proposal</option>
+                      <option value="website_feedback">Studio Website Feedback & Feature Request</option>
+                      <option value="general">General Studio Suggestion</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5">
+                      Your Suggestion / Story Pitch *
+                    </label>
+                    <textarea
+                      rows={5}
+                      value={suggestionText}
+                      onChange={(e) => setSuggestionText(e.target.value)}
+                      placeholder="Share your ideas, characters, community stories, or constructive thoughts..."
+                      className="w-full px-4 py-3 rounded-xl bg-[#161620] border border-[#2a2a36] text-white text-sm focus:border-[#d4af37] focus:outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      type="submit"
+                      className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8c2c] text-black font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Lightbulb className="w-3.5 h-3.5" />
+                      <span>Submit to Director's Suggestion Box</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           )}
 
         </div>

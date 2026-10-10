@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { INITIAL_PHOTOS, Photo } from '../data';
+import { getStoredPhotos, Photo } from '../data';
 import { MapPin, Maximize2, Tag, Calendar } from 'lucide-react';
 
 interface PortraitProps {
@@ -9,7 +9,8 @@ interface PortraitProps {
 
 export const Portrait: React.FC<PortraitProps> = ({ onSelectPhoto, onNavigateBooking }) => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const portraitPhotos = INITIAL_PHOTOS.filter(p => p.category === 'portrait');
+  const photos = getStoredPhotos();
+  const portraitPhotos = photos.filter(p => p.category === 'portrait');
 
   const filters = [
     { id: 'all', label: 'All Portraits' },
@@ -108,7 +109,7 @@ export const Portrait: React.FC<PortraitProps> = ({ onSelectPhoto, onNavigateBoo
           className="px-8 py-3.5 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8c2c] text-black font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all cursor-pointer inline-flex items-center gap-2"
         >
           <Calendar className="w-4 h-4" />
-          <span>Book Portrait Session ($250)</span>
+          <span>Book Portrait Session</span>
         </button>
       </div>
 

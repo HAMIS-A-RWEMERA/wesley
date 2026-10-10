@@ -1,5 +1,8 @@
 import React from 'react';
-import { STUDIO_INFO, INITIAL_FILMS, INITIAL_PHOTOS, INITIAL_SERVICES, Film, Photo } from '../data';
+import { 
+  getStoredSettings, getStoredFilms, getStoredPhotos, 
+  getStoredServices, Film, Photo 
+} from '../data';
 import { 
   Play, Calendar, ArrowRight, Award, Film as FilmIcon, 
   Camera, Compass, Sparkles, CheckCircle2, MapPin, ChevronRight 
@@ -12,8 +15,13 @@ interface HomeProps {
 }
 
 export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPhoto }) => {
-  const featuredFilms = INITIAL_FILMS.filter(f => f.featured);
-  const featuredPhotos = INITIAL_PHOTOS.filter(p => p.featured).slice(0, 6);
+  const settings = getStoredSettings();
+  const films = getStoredFilms();
+  const photos = getStoredPhotos();
+  const services = getStoredServices();
+
+  const featuredFilms = films.filter(f => f.featured);
+  const featuredPhotos = photos.filter(p => p.featured).slice(0, 6);
 
   return (
     <div className="space-y-24 pb-20">
@@ -23,7 +31,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
         {/* Background Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center z-0 scale-105 transition-transform duration-1000"
-          style={{ backgroundImage: `url(${STUDIO_INFO.heroBg})` }}
+          style={{ backgroundImage: `url(${settings.heroBg})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-[#0c0c0e]/80 to-[#0c0c0e]/60 z-10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_70%)] z-10" />
@@ -31,15 +39,15 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
         <div className="relative z-20 max-w-5xl mx-auto text-center space-y-6 px-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 text-[#d4af37] text-xs font-semibold tracking-widest uppercase">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Kigali, Rwanda • African Cinema & Fine Art</span>
+            <span>{settings.heroTagline}</span>
           </div>
 
           <h1 className="font-cinzel text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-wider leading-tight">
-            STORIES OF <span className="gold-gradient-text">LIGHT & LEGACY</span>
+            {settings.heroHeading}
           </h1>
 
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-[#b8b8c8] font-light leading-relaxed">
-            Crafting world-class African documentary cinema, narrative films, and timeless fine-art portraiture from the heart of Rwanda.
+            {settings.heroSubheading}
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -60,20 +68,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
             </button>
           </div>
 
-          {/* Quick Festival Highlights */}
+          {/* Festival Highlights */}
           <div className="pt-10 flex flex-wrap items-center justify-center gap-8 text-xs text-[#8e8e9c]">
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#d4af37]" />
-              <span>FESPACO Official Selection</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#d4af37]" />
-              <span>Durban Int. Film Festival Award</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-[#d4af37]" />
-              <span>Silicon Valley African Film Festival Winner</span>
-            </div>
+            {settings.heroLaurels.map((laurel, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-[#d4af37]" />
+                <span>{laurel}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -85,17 +87,17 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
           <div className="lg:col-span-5 relative">
             <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-[#d4af37]/30 shadow-2xl">
               <img
-                src={STUDIO_INFO.profileImage}
+                src={settings.profileImage}
                 alt="Wesley Rwandan Director"
                 className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
                 <span className="text-[#d4af37] text-xs font-semibold uppercase tracking-widest">
-                  Director & Cinematographer
+                  {settings.creatorRole}
                 </span>
                 <h3 className="font-cinzel text-2xl font-bold text-white">
-                  WESLEY
+                  {settings.creatorName}
                 </h3>
                 <p className="text-xs text-[#a0a0b0]">
                   Based in Kigali, Rwanda
@@ -109,13 +111,13 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
               PHILOSOPHY & VISION
             </span>
             <h2 className="font-cinzel text-3xl sm:text-4xl font-bold text-white tracking-wide leading-tight">
-              "CINEMA IS OUR MEMORY, OUR RESILIENCE, AND OUR HORIZON."
+              "{settings.directorQuote}"
             </h2>
             <p className="text-sm sm:text-base text-[#9e9eb0] leading-relaxed">
-              Every frame created at Wesley Studio honors the complexity, dignity, and beauty of African lived experiences. We believe in cinema that does not merely observe Africa through an external gaze, but speaks from within its fertile soil, ancient drums, and vibrant city avenues.
+              {settings.directorBio1}
             </p>
             <p className="text-sm sm:text-base text-[#9e9eb0] leading-relaxed">
-              Equipped with Netflix-certified cinema cameras and master prime optics, we collaborate with international broadcasters, humanitarian initiatives, and private patrons seeking immortal storytelling.
+              {settings.directorBio2}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-6">
@@ -128,10 +130,10 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
               </button>
               <span className="text-[#3a3a46]">•</span>
               <a 
-                href={`mailto:${STUDIO_INFO.email}`} 
+                href={`mailto:${settings.email}`} 
                 className="text-xs text-[#a0a0b0] hover:text-white transition-colors"
               >
-                Inquiries: <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>
+                Inquiries: <strong className="text-[#d4af37]">{settings.email}</strong>
               </a>
             </div>
           </div>
@@ -154,7 +156,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
             onClick={() => onNavigate('films')}
             className="inline-flex items-center gap-2 text-xs font-bold text-[#d4af37] hover:text-[#f3e5ab] uppercase tracking-wider cursor-pointer self-start md:self-auto"
           >
-            <span>View All Films & Trailers</span>
+            <span>View All Films & Trailers ({films.length})</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -230,14 +232,14 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
               onClick={() => onNavigate('landscape')}
               className="text-xs font-bold text-[#b0b0be] hover:text-[#d4af37] transition-colors cursor-pointer"
             >
-              Landscape ({INITIAL_PHOTOS.filter(p => p.category === 'landscape').length})
+              Landscape ({photos.filter(p => p.category === 'landscape').length})
             </button>
             <span className="text-[#33333d]">/</span>
             <button
               onClick={() => onNavigate('portrait')}
               className="text-xs font-bold text-[#b0b0be] hover:text-[#d4af37] transition-colors cursor-pointer"
             >
-              Portrait ({INITIAL_PHOTOS.filter(p => p.category === 'portrait').length})
+              Portrait ({photos.filter(p => p.category === 'portrait').length})
             </button>
           </div>
         </div>
@@ -290,7 +292,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate, onSelectFilm, onSelectPh
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {INITIAL_SERVICES.slice(0, 3).map((service) => (
+          {services.slice(0, 3).map((service) => (
             <div
               key={service.id}
               className="bg-[#111116] border border-[#22222a] hover:border-[#d4af37]/60 rounded-2xl p-8 flex flex-col justify-between space-y-6 transition-all duration-300 shadow-lg relative group"

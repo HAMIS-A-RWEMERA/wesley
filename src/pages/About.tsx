@@ -1,5 +1,5 @@
 import React from 'react';
-import { STUDIO_INFO } from '../data';
+import { getStoredSettings } from '../data';
 import { Award, Camera, Film, Video, Mic, Compass, Sparkles, MapPin, Mail, Phone, Calendar } from 'lucide-react';
 
 interface AboutProps {
@@ -8,6 +8,8 @@ interface AboutProps {
 }
 
 export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateContact }) => {
+  const settings = getStoredSettings();
+
   const gearCategories = [
     {
       category: 'Cinema Camera Systems',
@@ -80,17 +82,17 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
         <div className="lg:col-span-5">
           <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-[#d4af37]/40 shadow-2xl">
             <img
-              src={STUDIO_INFO.profileImage}
+              src={settings.profileImage}
               alt="Wesley Filmmaker Kigali"
               className="w-full h-full object-cover object-top"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">
               <span className="text-xs uppercase font-bold tracking-widest text-[#d4af37]">
-                Founder & Director
+                {settings.creatorRole}
               </span>
               <h2 className="font-cinzel text-3xl font-extrabold text-white">
-                WESLEY
+                {settings.creatorName}
               </h2>
               <p className="text-xs text-[#a0a0b0]">
                 Kigali, Rwanda
@@ -107,10 +109,10 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
             TELLING THE UNTOLD STORIES OF RWANDA & AFRICA
           </h1>
           <p className="text-sm sm:text-base text-[#a0a0b0] leading-relaxed">
-            {STUDIO_INFO.bio}
+            {settings.directorBio1}
           </p>
           <p className="text-sm sm:text-base text-[#a0a0b0] leading-relaxed">
-            Born and raised in Rwanda, Wesley’s journey in cinema began with a passion for preserving ancestral oral traditions through high-definition visual poetry. From tracking mountain gorillas in the volcanic Virunga range to filming intimate portraits in the creative heartbeat of Kigali, his approach combines documentary authenticity with Hollywood-grade aesthetic rigor.
+            {settings.directorBio2}
           </p>
 
           <div className="pt-4 flex flex-wrap items-center gap-4">
@@ -222,17 +224,17 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
         <div className="space-y-3 text-sm text-[#b0b0be]">
           <div className="flex items-start gap-2.5">
             <MapPin className="w-4 h-4 text-[#d4af37] shrink-0 mt-0.5" />
-            <span>{STUDIO_INFO.address}</span>
+            <span>{settings.address}</span>
           </div>
           <div className="flex items-center gap-2.5">
             <Mail className="w-4 h-4 text-[#d4af37] shrink-0" />
-            <a href={`mailto:${STUDIO_INFO.email}`} className="text-[#d4af37] hover:underline">
-              {STUDIO_INFO.email}
+            <a href={`mailto:${settings.email}`} className="text-[#d4af37] hover:underline">
+              {settings.email}
             </a>
           </div>
           <div className="flex items-center gap-2.5">
             <Phone className="w-4 h-4 text-[#d4af37] shrink-0" />
-            <span>{STUDIO_INFO.phone}</span>
+            <span>{settings.phone}</span>
           </div>
         </div>
 
@@ -244,7 +246,7 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
             Schedule Studio Visit
           </button>
           <a
-            href={`https://wa.me/${STUDIO_INFO.whatsapp}?text=Hello%20Wesley%2C%20I%20am%20interested%20in%20a%20film%20project`}
+            href={`https://wa.me/${settings.whatsapp}?text=Hello%20Wesley%2C%20I%20am%20interested%20in%20a%20film%20project`}
             target="_blank"
             rel="noreferrer"
             className="w-full py-3 rounded-full border border-[#2a2a35] hover:border-[#25D366] text-[#b0b0be] hover:text-[#25D366] text-xs font-semibold uppercase tracking-wider text-center transition-colors"

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { INITIAL_SERVICES, saveBooking, STUDIO_INFO, Booking as BookingType } from '../data';
+import { 
+  getStoredServices, getStoredSettings, saveBooking, 
+  Booking as BookingType 
+} from '../data';
 import { 
   Calendar as CalendarIcon, Clock, CheckCircle2, 
   MapPin, Phone, Mail, User, Sparkles, MessageSquare, ArrowRight 
@@ -11,12 +14,15 @@ interface BookingProps {
 }
 
 export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavigateHome }) => {
+  const services = getStoredServices();
+  const settings = getStoredSettings();
+
   const [selectedServiceId, setSelectedServiceId] = useState<number>(() => {
     if (preselectedServiceName) {
-      const match = INITIAL_SERVICES.find(s => s.name.toLowerCase().includes(preselectedServiceName.toLowerCase()));
+      const match = services.find(s => s.name.toLowerCase().includes(preselectedServiceName.toLowerCase()));
       if (match) return match.id;
     }
-    return 1;
+    return services[0]?.id || 1;
   });
 
   const [clientName, setClientName] = useState('');
@@ -28,12 +34,12 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
     return d.toISOString().split('T')[0];
   });
   const [time, setTime] = useState('10:00 AM');
-  const [location, setLocation] = useState('Kigali Studio');
+  const [location, setLocation] = useState('Kigali Studio (Kacyiru)');
   const [notes, setNotes] = useState('');
 
   const [submittedBooking, setSubmittedBooking] = useState<BookingType | null>(null);
 
-  const selectedService = INITIAL_SERVICES.find(s => s.id === selectedServiceId) || INITIAL_SERVICES[0];
+  const selectedService = services.find(s => s.id === selectedServiceId) || services[0];
 
   const timeSlots = [
     '09:00 AM',
@@ -79,6 +85,13 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
     saveBooking(newBooking);
     setSubmittedBooking(newBooking);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Directly prepare and trigger email notification to Director Wesley at settings.email (rwemera30@gmail.com)
+    const emailSubject = encodeURIComponent(`New Shoot Booking [${newBooking.id}]: ${clientName} - ${selectedService.name}`);
+    const emailBody = encodeURIComponent(
+      `Hello Wesley,\n\nA new client booking has been registered:\n\nBooking ID: ${newBooking.id}\nClient: ${clientName}\nEmail: ${clientEmail}\nPhone: ${clientPhone}\nService: ${selectedService.name} (${selectedService.price})\nDate: ${date} at ${time}\nLocation: ${location}\nNotes: ${notes || 'None'}\n\nPlease review in the studio CMS to confirm or deny.`
+    );
+    window.open(`mailto:${settings.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
   };
 
   const handleReset = () => {
@@ -114,7 +127,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
 
           <div className="space-y-2">
             <span className="text-xs uppercase font-bold tracking-widest text-[#d4af37]">
-              RESERVATION REQUEST RECEIVED
+              RESERVATION REQUEST RECEIVED & DIRECTLY NOTIFIED
             </span>
             <h2 className="font-cinzel text-2xl sm:text-3xl font-bold text-white">
               Thank You, {submittedBooking.clientName}!
@@ -148,35 +161,27 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
           </div>
 
           <p className="text-xs text-[#9090a0] leading-relaxed">
-            Wesley has been notified at <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>. Our studio manager will reach out via WhatsApp / Email to finalize the shoot details and creative treatment.
+            Wesley has been notified at <strong className="text-[#d4af37]">{settings.email}</strong>. When Director Wesley accepts or reviews your session in the studio CMS, you will receive an official confirmation email with any director notes at <strong className="text-white">{submittedBooking.email}</strong>.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
-              href={`mailto:${STUDIO_INFO.email}?subject=Booking Confirmation ${submittedBooking.id} - ${submittedBooking.clientName}&body=Hello Wesley,%0D%0A%0D%0AI have submitted booking ${submittedBooking.id} for ${submittedBooking.serviceName} on ${submittedBooking.date}.%0D%0A%0D%0ALocation: ${submittedBooking.location}%0D%0APhone: ${submittedBooking.phone}%0D%0A%0D%0AThank you!`}
-              className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:bg-[#f3e5ab] transition-colors flex items-center justify-center gap-2"
-            >
-              <Mail className="w-4 h-4" />
-              <span>Email Confirmation Directly</span>
-            </a>
-
-            <a
-              href={`https://wa.me/${STUDIO_INFO.whatsapp}?text=Hello%20Wesley%2C%20I%20have%20submitted%20booking%20${submittedBooking.id}%20for%20${encodeURIComponent(submittedBooking.serviceName)}%20on%20${submittedBooking.date}.`}
+              href={`https://wa.me/${settings.whatsapp}?text=Hello%20Wesley%2C%20I%20have%20submitted%20booking%20${submittedBooking.id}%20for%20${encodeURIComponent(submittedBooking.serviceName)}%20on%20${submittedBooking.date}.`}
               target="_blank"
               rel="noreferrer"
-              className="w-full sm:w-auto px-6 py-3 rounded-full border border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-black font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-6 py-3 rounded-full bg-[#25D366] text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
             >
               <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp Instant Confirm</span>
+              <span>Confirm via WhatsApp Directly</span>
             </a>
-          </div>
 
-          <button
-            onClick={handleReset}
-            className="text-xs text-[#888898] hover:text-white underline cursor-pointer pt-2 block mx-auto"
-          >
-            Submit Another Booking Request
-          </button>
+            <button
+              onClick={handleReset}
+              className="w-full sm:w-auto px-6 py-3 rounded-full border border-[#d4af37]/40 text-[#d4af37] hover:bg-[#d4af37] hover:text-black font-bold text-xs uppercase tracking-wider transition-colors"
+            >
+              Book Another Session
+            </button>
+          </div>
         </div>
       ) : (
         /* Interactive Booking Form */
@@ -194,7 +199,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {INITIAL_SERVICES.map((srv) => (
+              {services.map((srv) => (
                 <div
                   key={srv.id}
                   onClick={() => setSelectedServiceId(srv.id)}
@@ -216,7 +221,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     </p>
                   </div>
                   <div className="pt-4 border-t border-[#1e1e28] mt-4 flex items-center justify-between">
-                    <span className="font-cinzel text-sm font-bold text-white">
+                    <span className="font-cinzel text-base font-bold text-white">
                       {srv.price}
                     </span>
                     <span className={`text-[10px] font-bold uppercase ${
@@ -329,7 +334,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                 <div>
                   <label className="block text-xs uppercase font-bold tracking-wider text-[#9e9ea8] mb-1.5 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-[#d4af37]" />
-                    <span>Email Address *</span>
+                    <span>Email Address (For Notifications) *</span>
                   </label>
                   <input
                     type="email"
@@ -372,14 +377,14 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
 
               <div className="pt-4 border-t border-[#1e1e28] flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="text-xs text-[#8e8e9c]">
-                  Official Studio Recipient: <strong className="text-[#d4af37]">{STUDIO_INFO.email}</strong>
+                  Directly notified to: <strong className="text-[#d4af37]">{settings.email}</strong>
                 </div>
 
                 <button
                   type="submit"
                   className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-[#d4af37] to-[#aa8c2c] text-black font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <span>Confirm & Submit Booking Request</span>
+                  <span>Confirm & Send Booking to Studio</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
