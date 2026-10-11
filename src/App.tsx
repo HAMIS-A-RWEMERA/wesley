@@ -9,8 +9,7 @@ import { WhatsAppFloatingButton } from './components/WhatsAppFloatingButton';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Films } from './pages/Films';
-import { Landscape } from './pages/Landscape';
-import { Portrait } from './pages/Portrait';
+import { Photography } from './pages/Photography';
 import { Booking } from './pages/Booking';
 import { Contact } from './pages/Contact';
 
@@ -18,20 +17,25 @@ import { Film, Photo } from './data';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('home');
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [activeVideoFilm, setActiveVideoFilm] = useState<Film | null>(null);
   const [activeLightboxPhoto, setActiveLightboxPhoto] = useState<Photo | null>(null);
   const [adminModalOpen, setAdminModalOpen] = useState<boolean>(false);
   const [preselectedBookingService, setPreselectedBookingService] = useState<string | undefined>(undefined);
   const [contentVersion, setContentVersion] = useState<number>(0);
 
-  // Sync with browser hash if user opens direct link like #booking, #films, #admin
+  // Sync with browser hash if user opens direct link like #booking, #films, #photography
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '').toLowerCase();
       if (hash === 'admin') {
         setAdminModalOpen(true);
-      } else if (['home', 'about', 'films', 'landscape', 'portrait', 'booking', 'contact'].includes(hash)) {
+      } else if (['home', 'about', 'films', 'photography', 'booking', 'contact'].includes(hash)) {
         setCurrentPage(hash);
+      } else if (['landscape', 'portrait'].includes(hash)) {
+        // Backwards compatibility redirect
+        setCurrentPage('photography');
+        setSelectedCategory(hash);
       }
     };
 
@@ -40,8 +44,9 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  const navigateTo = (page: string) => {
+  const navigateTo = (page: string, category?: string) => {
     setCurrentPage(page);
+    setSelectedCategory(category);
     window.location.hash = page;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -52,10 +57,11 @@ export default function App() {
   };
 
   return (
-    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#0c0c0e] text-[#f2f2f4]">
+    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#07090e] text-[#f1f5f9]">
       {/* Sticky Navigation Bar */}
       <Navbar
         currentPage={currentPage}
+        selectedCategory={selectedCategory}
         onNavigate={navigateTo}
         onOpenAdmin={() => setAdminModalOpen(true)}
       />
@@ -79,22 +85,17 @@ export default function App() {
 
         {currentPage === 'films' && (
           <Films
+            initialCategory={selectedCategory}
             onSelectFilm={(film) => setActiveVideoFilm(film)}
-            onNavigateBooking={() => handleBookService('Documentary Filming')}
+            onNavigateBooking={handleBookService}
           />
         )}
 
-        {currentPage === 'landscape' && (
-          <Landscape
+        {currentPage === 'photography' && (
+          <Photography
+            initialCategory={selectedCategory}
             onSelectPhoto={(photo) => setActiveLightboxPhoto(photo)}
-            onNavigateBooking={() => navigateTo('contact')}
-          />
-        )}
-
-        {currentPage === 'portrait' && (
-          <Portrait
-            onSelectPhoto={(photo) => setActiveLightboxPhoto(photo)}
-            onNavigateBooking={() => handleBookService('Portrait Session')}
+            onNavigateBooking={handleBookService}
           />
         )}
 
@@ -120,24 +121,29 @@ export default function App() {
       <VideoModal
         film={activeVideoFilm}
         onClose={() => setActiveVideoFilm(null)}
-        onBookFilmProject={(title) => handleBookService(title)}
       />
 
       {/* Photography Fullscreen Lightbox */}
       <LightboxModal
         photo={activeLightboxPhoto}
         onClose={() => setActiveLightboxPhoto(null)}
-        onInquirePhoto={(title) => navigateTo('contact')}
       />
 
-      {/* Studio CMS Portal Modal */}
+      {/* Studio CMS & Director Admin Portal */}
       <AdminModal
         isOpen={adminModalOpen}
-        onClose={() => setAdminModalOpen(false)}
-        onContentUpdated={() => setContentVersion(v => v + 1)}
+        onClose={() => {
+          setAdminModalOpen(false);
+          if (window.location.hash === '#admin') {
+            window.location.hash = currentPage;
+          }
+        }}
+        onDataChanged={() => {
+          setContentVersion((v) => v + 1);
+        }}
       />
 
-      {/* Persistent Floating WhatsApp Quick-Chat Widget */}
+      {/* Direct WhatsApp Concierge Button */}
       <WhatsAppFloatingButton />
     </div>
   );

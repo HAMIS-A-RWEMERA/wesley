@@ -1,3 +1,79 @@
+export type FilmCategory = 
+  | 'corporate' 
+  | 'brand' 
+  | 'commercials' 
+  | 'shorts' 
+  | 'documentaries' 
+  | 'social' 
+  | 'events';
+
+export interface FilmCategoryMeta {
+  id: FilmCategory;
+  title: string;
+  shortDesc: string;
+}
+
+export const FILM_CATEGORIES: FilmCategoryMeta[] = [
+  { 
+    id: 'corporate', 
+    title: 'Corporate Videos', 
+    shortDesc: 'Company profiles, NGO projects, interviews, testimonials, organizational stories, and event coverage.' 
+  },
+  { 
+    id: 'brand', 
+    title: 'Brand Films', 
+    shortDesc: "Cinematic videos that communicate a brand's identity, values, personality, and story." 
+  },
+  { 
+    id: 'commercials', 
+    title: 'Commercials & Ads', 
+    shortDesc: 'Product advertisements, promotional videos, and marketing campaigns.' 
+  },
+  { 
+    id: 'shorts', 
+    title: 'Short Films', 
+    shortDesc: 'Narrative films, fictional stories, and independent filmmaking projects, including THREE NIGHTS.' 
+  },
+  { 
+    id: 'documentaries', 
+    title: 'Documentaries', 
+    shortDesc: 'Real-life stories, community projects, human experiences, and documentary filmmaking.' 
+  },
+  { 
+    id: 'social', 
+    title: 'Social Media Content', 
+    shortDesc: 'Instagram Reels, short-form videos, lifestyle content, and content for digital platforms.' 
+  },
+  { 
+    id: 'events', 
+    title: 'Event Films', 
+    shortDesc: 'Event highlights, conferences, celebrations, and special occasions.' 
+  }
+];
+
+export type PhotoCategory =
+  | 'portrait'
+  | 'fashion'
+  | 'lifestyle'
+  | 'event'
+  | 'brand'
+  | 'landscape';
+
+export interface PhotoCategoryMeta {
+  id: PhotoCategory;
+  title: string;
+  shortDesc: string;
+}
+
+export const PHOTO_CATEGORIES: PhotoCategoryMeta[] = [
+  { id: 'portrait', title: 'Portrait Photography', shortDesc: 'Intimate character studies, studio lighting & authentic African expressions.' },
+  { id: 'fashion', title: 'Fashion Photography', shortDesc: 'High-fashion editorial, modern textiles, and avant-garde aesthetic direction.' },
+  { id: 'lifestyle', title: 'Lifestyle Photography', shortDesc: 'Natural, spontaneous visual moments reflecting authentic contemporary culture.' },
+  { id: 'event', title: 'Event Photography', shortDesc: 'High-caliber galas, cultural celebrations, private summits, and milestone events.' },
+  { id: 'brand', title: 'Brand Photography', shortDesc: 'Product styling, commercial assets, executive profiles, and campaign visuals.' },
+  { id: 'landscape', title: 'Landscape Photography', shortDesc: 'Timeless panoramic vistas of Rwanda, the Great Lakes, and African nature.' }
+];
+
 export interface Film {
   id: number;
   title: string;
@@ -6,10 +82,11 @@ export interface Film {
   poster: string;
   videoUrl: string;
   genre: string;
-  category: 'documentary' | 'narrative' | 'commercial' | 'art';
+  category: FilmCategory;
   duration: string;
   year: number;
-  awards: string;
+  awards?: string;
+  client?: string;
   featured?: boolean;
 }
 
@@ -18,8 +95,7 @@ export interface Photo {
   title: string;
   description: string;
   imageUrl: string;
-  category: 'landscape' | 'portrait';
-  subCategory?: string;
+  category: PhotoCategory;
   location: string;
   featured?: boolean;
 }
@@ -93,20 +169,20 @@ export interface SiteSettings {
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  heroTagline: 'Kigali, Rwanda • African Cinema & Fine Art',
-  heroHeading: 'STORIES OF LIGHT & LEGACY',
-  heroSubheading: 'Crafting world-class African documentary cinema, narrative films, and timeless fine-art portraiture from the heart of Rwanda.',
+  heroTagline: 'Kigali, Rwanda • Cinematic Film & Visual Arts',
+  heroHeading: 'STORIES THAT MOVE AUDIENCES FORWARD.',
+  heroSubheading: 'High-impact corporate videos, cinematic brand films, independent narratives, and fine-art photography crafted with master optics in Rwanda.',
   heroLaurels: [
-    'FESPACO Official Selection',
-    'Durban Int. Film Festival Award',
-    'Silicon Valley African Film Festival Winner'
+    'Pan-African Cinema Production',
+    'Broadcast & Commercial 4K/6K Delivery',
+    'Bespoke Editorial & Creative Direction'
   ],
   directorQuote: 'CINEMA IS OUR MEMORY, OUR RESILIENCE, AND OUR HORIZON.',
-  directorBio1: 'Every frame created at Wesley Studio honors the complexity, dignity, and beauty of African lived experiences. We believe in cinema that does not merely observe Africa through an external gaze, but speaks from within its fertile soil, ancient drums, and vibrant city avenues.',
-  directorBio2: 'Equipped with Netflix-certified cinema cameras and master prime optics, we collaborate with international broadcasters, humanitarian initiatives, and private patrons seeking immortal storytelling.',
+  directorBio1: 'Every frame created at Wesley Studio honors the complexity, dignity, and authenticity of our subjects. We produce media engineered to communicate vision with clarity, emotional power, and timeless technical perfection.',
+  directorBio2: 'Equipped with Netflix-certified cinema cameras, master prime optics, and full field audio rigs, we partner with enterprises, organizations, independent artists, and brands seeking immortal visual storytelling.',
   studioName: 'WESLEY STUDIO',
   creatorName: 'Wesley',
-  creatorRole: 'African Filmmaker & Visual Storyteller',
+  creatorRole: 'Filmmaker & Visual Storyteller',
   email: 'rwemera30@gmail.com',
   phone: '+250 792 087 787',
   whatsapp: '250792087787',
@@ -140,219 +216,317 @@ export const STUDIO_INFO = {
 export const INITIAL_SERVICES: Service[] = [
   {
     id: 1,
-    name: 'Fine-Art & Editorial Portraiture',
-    tagline: 'Capturing depth, dignity, and authentic African character',
-    description: 'High-end studio or environmental portrait session conducted in Kigali or bespoke East African locations with master lighting and editorial styling.',
-    duration: '2 – 3 Hours',
-    price: '$250',
+    name: 'Corporate & Organizational Storytelling',
+    tagline: 'Company profiles, NGO documentaries, interviews & executive testimonials',
+    description: 'High-impact film production communicating mission, operational scale, and community impact with television-grade polish.',
+    duration: 'Full Production Cycle',
+    price: '$750',
     features: [
-      'Pre-shoot creative direction & moodboard',
-      'Studio or on-location Kigali setup',
-      '15 master retouched high-res deliverables',
-      'Private cloud archival gallery',
-      'Print release & digital licensing'
+      'Concept development & treatment script',
+      'Dual 4K cinema cameras with pro lighting setup',
+      'High-fidelity 32-bit float audio capture',
+      'Color grading & executive revisions',
+      'Deliverables in 16:9 4K and multi-platform cutdowns'
     ]
   },
   {
     id: 2,
-    name: 'Documentary Feature & Short Production',
-    tagline: 'Compelling humanitarian, cultural & ecological stories',
-    description: 'Full-pipeline documentary cinema for cultural institutes, global non-profits, wildlife archives, and independent festival commissions.',
+    name: 'Brand Films & Cinematic Commercials',
+    tagline: 'Visual identities that elevate brand perception and generate conversions',
+    description: 'Cinematic commercials, product launches, and brand narrative campaigns crafted for digital ads and broadcast release.',
     duration: 'Bespoke Production',
-    price: 'Custom Quote',
+    price: '$950',
     features: [
-      'Archival research & local scriptwriting',
-      'Cinema 4K/6K multi-cam field crew',
-      'Drone & aerial cinema clearance',
-      'Multi-language translation & subtitles',
-      'Color grading & Dolby cinema audio mix'
+      'Creative strategy & visual moodboard',
+      'Master prime lenses & dynamic camera staging',
+      'Drone aerial cinematic footage clearance',
+      'High-impact motion graphics & sound design',
+      'Ad-ready cutdowns (9:16 vertical & 16:9 broadcast)'
     ]
   },
   {
     id: 3,
-    name: 'Commercial & Brand Cinema',
-    tagline: 'Transformative visual identities for modern Africa',
-    description: 'Cinematic commercials, architectural showcases, and brand narrative films tailored for broadcast, digital campaigns, and executive pitch decks.',
-    duration: 'Full Production Cycle',
-    price: '$800',
+    name: 'Documentary & Narrative Commission',
+    tagline: 'Authentic real-life stories and independent cinema',
+    description: 'Long-form and short-form documentary production for cultural institutes, broadcasters, and humanitarian initiatives.',
+    duration: 'Production Dependent',
+    price: 'Custom Quote',
     features: [
-      'Storyboarding & visual treatments',
-      'Dedicated director & sound engineer',
-      'High-dynamic range lighting & staging',
-      'Fast-turnaround social cutdowns (9:16 & 16:9)',
-      'Global distribution licensing'
+      'Field research & protagonist interviews',
+      'Multi-day expedition crew coverage across Rwanda',
+      'Dolby 5.1/Stereo cinema audio mixing',
+      'Multi-language subtitling & festival mastering',
+      'Full archival media delivery'
     ]
   },
   {
     id: 4,
-    name: 'African Wedding Narratives',
-    tagline: 'Timeless cinematic celebration of love and legacy',
-    description: 'Bespoke wedding films blending traditional Gusaba and modern celebrations with poetic documentary storytelling.',
-    duration: 'Full Day Coverage',
-    price: '$1,200',
+    name: 'Portrait, Fashion & Brand Photography',
+    tagline: 'High-end studio sessions, editorial spreads, and campaign imagery',
+    description: 'Master lighting sessions in our Kigali studio or bespoke East African locations for personalities, models, and brands.',
+    duration: '2 – 4 Hours',
+    price: '$300',
     features: [
-      '2 Cinematographers + 1 Master Photographer',
-      'Full-day coverage (Traditional + Reception)',
-      'Cinematic 7-10 minute highlight film',
-      'Full ceremony & speech edits',
-      'Handcrafted luxury presentation box'
+      'Pre-session creative direction & style guide',
+      'Studio strobe lighting & backdrops in Kigali',
+      '20 master retouched high-resolution images',
+      'Online client proofing portal',
+      'Commercial usage release'
     ]
   },
   {
     id: 5,
-    name: 'Creative Direction & Script Consultation',
-    tagline: 'Refining African screenplays and visual aesthetics',
-    description: 'Consultation for emerging and international filmmakers shooting in Rwanda or the Great Lakes region.',
-    duration: 'Per Session / Project',
-    price: '$400',
+    name: 'Event Films & Conference Coverage',
+    tagline: 'Event highlights, global summits, and milestone galas',
+    description: 'Dynamic event cinematography capturing keynotes, audience reactions, VIP interviews, and atmospheric highlight reels.',
+    duration: 'Full Day Coverage',
+    price: '$600',
     features: [
-      'Script breakdown & cultural advisory',
-      'Location scouting recommendations in Rwanda',
-      'Production crew & talent sourcing advice',
-      'Festival distribution roadmap'
+      'Multi-operator field team with gimbal stabilization',
+      'Same-day or 48-hour social teaser delivery',
+      'Full keynote session recordings',
+      'High-energy 3-minute recap film',
+      'High-res event photography add-on'
     ]
   }
 ];
 
 export const INITIAL_FILMS: Film[] = [
+  // 1. Short Films (including THREE NIGHTS)
   {
     id: 1,
+    title: 'THREE NIGHTS',
+    description: 'An evocative narrative short film exploring guilt, silence, and emotional reckoning over three transformative nocturnal encounters in Kigali.',
+    synopsis: 'A signature fictional narrative directed by Wesley, following a reclusive protagonist confronting an unresolved truth across three consecutive nights under the city lights of Kigali.',
+    poster: '/src/assets/images/film_kigali_1785877521721.jpg',
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    genre: 'Narrative Drama / Psychological',
+    category: 'shorts',
+    duration: '18 min',
+    year: 2025,
+    featured: true
+  },
+  {
+    id: 2,
     title: 'The Echoes of Akagera',
     description: 'A poignant narrative following a young Rwandan boy who uncovers his ancestral drum in the wild savannah of Akagera, sparking cultural rebirth.',
-    synopsis: 'Set against the golden savannah grasses and sweeping lakes of Akagera National Park, this narrative explores generational healing and the sacred rhythm of the Intore drums.',
+    synopsis: 'Set against the golden savannah grasses and sweeping lakes of Akagera, exploring generational healing and sacred Intore rhythms.',
     poster: '/src/assets/images/film_akagera_1785877508167.jpg',
     videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-    genre: 'Drama / Cultural Narrative',
-    category: 'narrative',
+    genre: 'Cultural Narrative',
+    category: 'shorts',
     duration: '24 min',
     year: 2025,
-    awards: 'FESPACO Official Selection 2025 • Durban International Film Festival Winner',
     featured: true
   },
-  {
-    id: 2,
-    title: 'Whispers of Kigali',
-    description: 'An intimate urban documentary tracking Kigali\'s nocturnal heartbeat, creative fashion collectives, and the sounds shaping a forward-looking Rwanda.',
-    synopsis: 'Through hypnotic night cinematography, Whispers of Kigali immerses viewers into the bustling creative studios of Nyamirambo and contemporary galleries of Kiyovu.',
-    poster: '/src/assets/images/film_kigali_1785877521721.jpg',
-    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    genre: 'Documentary / Urban Culture',
-    category: 'documentary',
-    duration: '42 min',
-    year: 2024,
-    awards: 'Silicon Valley African Film Fest • Best Short Documentary 2024',
-    featured: true
-  },
+  // 2. Corporate Videos
   {
     id: 3,
-    title: 'Threads of Heritage',
-    description: 'A short poetic film celebrating the sacred geometry of Imigongo and traditional Rwandan weavers, paired with an original orchestral score.',
-    synopsis: 'A mesmerizing visual symphony meditating on natural volcanic pigments, cow dung relief textures, and centuries-old mathematical artistry preserved across generations.',
-    poster: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80',
-    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-    genre: 'Poetic Short / Art Film',
-    category: 'art',
-    duration: '14 min',
-    year: 2023,
-    awards: 'Kigali Cine Festival Special Jury Prize 2023',
-    featured: true
-  },
-  {
-    id: 4,
-    title: 'Nyungwe: The Ancient Canopy',
-    description: 'An ecological documentary exploring the mist-shrouded montane rainforest that feeds both the Nile and the Congo river basins.',
-    synopsis: 'Deep inside one of Africa\'s oldest surviving high-altitude rainforests, Wesley documents endangered chimpanzees, ancient ferns, and indigenous forest wardens protecting biodiversity.',
+    title: 'Rwanda Green Horizons: NGO Impact',
+    description: 'A compelling organizational documentary for a sustainable agriculture initiative empowering rural farming cooperatives in the Northern Province.',
+    synopsis: 'Produced for community development leaders, highlighting agricultural modernization, water collection infrastructure, and farmer testimonies.',
     poster: '/src/assets/images/landscape_rwanda_1785877535052.jpg',
     videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    genre: 'Conservation / Ecological Cinema',
-    category: 'documentary',
-    duration: '31 min',
-    year: 2024,
-    awards: 'East African Environmental Film Gala Nominee',
-    featured: false
-  }
-];
-
-export const INITIAL_PHOTOS: Photo[] = [
-  {
-    id: 1,
-    title: 'Mist Over Lake Kivu',
-    description: 'Dawn breaking over the calm waters of Karongi as traditional wooden pirogue fishermen cast nets in morning fog.',
-    imageUrl: '/src/assets/images/landscape_rwanda_1785877535052.jpg',
-    category: 'landscape',
-    subCategory: 'Lakes',
-    location: 'Karongi, Western Province, Rwanda',
+    genre: 'Corporate Documentary',
+    category: 'corporate',
+    duration: '8 min',
+    year: 2025,
     featured: true
-  },
-  {
-    id: 2,
-    title: 'The Thousand Hills Canopy',
-    description: 'Panoramic emerald terrace ridges bathed in golden twilight along the foothills of the Virunga volcanoes.',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80',
-    category: 'landscape',
-    subCategory: 'Highlands',
-    location: 'Musanze, Northern Province, Rwanda',
-    featured: true
-  },
-  {
-    id: 3,
-    title: 'Nyungwe Rainforest Sanctuary',
-    description: 'Sun rays penetrating the dense primordial canopy above the hanging rope bridge in Southern Rwanda.',
-    imageUrl: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1400&q=80',
-    category: 'landscape',
-    subCategory: 'Forests',
-    location: 'Nyungwe National Park, Rwanda',
-    featured: false
   },
   {
     id: 4,
-    title: 'Kigali Skyline at Twilight',
-    description: 'Architectural luminescence of Kigali Convention Center glowing beneath equatorial blue hour skies.',
-    imageUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1400&q=80',
-    category: 'landscape',
-    subCategory: 'Urban',
-    location: 'Kacyiru, Kigali, Rwanda',
-    featured: true
+    title: 'Bank of Kigali Tech Labs — Annual Showcase',
+    description: 'Executive interviews, agile engineering culture, and fintech innovation overview presented at the Africa Tech Summit.',
+    synopsis: 'High-energy corporate overview combining dynamic office steadicam shots, client testimonials, and kinetic typography.',
+    poster: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    genre: 'Executive Corporate Profile',
+    category: 'corporate',
+    duration: '5 min',
+    year: 2024,
+    featured: false
   },
+  // 3. Brand Films
   {
     id: 5,
-    title: 'Dancer of Umushanana',
-    description: 'Fine-art editorial portrait celebrating the poise, golden silks, and crown ornament of traditional Rwandan choreography.',
-    imageUrl: '/src/assets/images/portrait_story_1785877547350.jpg',
-    category: 'portrait',
-    subCategory: 'Cultural',
-    location: 'Kigali Cultural Village, Rwanda',
+    title: 'House of Tayo: Modern African Tailoring',
+    description: 'Cinematic brand film exploring the textures, bold colors, and tailored philosophy of Kigali bespoke menswear.',
+    synopsis: 'A visually arresting brand piece weaving sewing machine rhythms, silk textures, and street runway aesthetics into a cohesive narrative.',
+    poster: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    genre: 'Brand Story',
+    category: 'brand',
+    duration: '3 min',
+    year: 2025,
     featured: true
   },
+  // 4. Commercials & Ads
   {
     id: 6,
-    title: 'The Master Woodcarver',
-    description: 'Atmospheric character portrait of a veteran craftsman in Nyamirambo, hands weathered with half a century of artistry.',
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=80',
-    category: 'portrait',
-    subCategory: 'Editorial',
-    location: 'Nyamirambo, Kigali, Rwanda',
+    title: 'Virunga Roast: Speciality Coffee Campaign',
+    description: 'Commercial campaign filming high-altitude coffee cultivation, roasting craft, and sensory espresso extraction.',
+    synopsis: 'Television and digital marketing ad commissioned for international export markets, highlighting Rwandan volcanic soil coffee.',
+    poster: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    genre: 'Product Commercial',
+    category: 'commercials',
+    duration: '60 sec',
+    year: 2025,
     featured: true
   },
+  // 5. Documentaries
   {
     id: 7,
-    title: 'Youth & Contemporary Rhythm',
-    description: 'High-contrast studio session exploring modern African youth identity, avant-garde textiles, and confident gaze.',
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=80',
-    category: 'portrait',
-    subCategory: 'Studio',
-    location: 'Wesley Studio, Kacyiru, Kigali',
+    title: 'Whispers of Kigali: The Midnight Canvas',
+    description: 'An intimate urban documentary tracking Kigali’s nocturnal heartbeat, creative fashion collectives, and underground soundscapes.',
+    synopsis: 'Through hypnotic night cinematography, immersing viewers into creative studios of Nyamirambo and contemporary galleries of Kiyovu.',
+    poster: '/src/assets/images/film_kigali_1785877521721.jpg',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    genre: 'Feature Documentary',
+    category: 'documentaries',
+    duration: '36 min',
+    year: 2024,
     featured: true
   },
   {
     id: 8,
-    title: 'Tea Harvester of Gisovu',
-    description: 'Sunlit morning portrait of a tea artisan on the high slopes overlooking Lake Kivu.',
-    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1400&q=80',
-    category: 'portrait',
-    subCategory: 'Editorial',
-    location: 'Gisovu, Western Province, Rwanda',
+    title: 'Nyungwe: The Ancient Canopy',
+    description: 'An ecological documentary exploring the mist-shrouded montane rainforest that feeds both the Nile and the Congo river basins.',
+    synopsis: 'Documenting indigenous forest wardens, ancient ferns, and biodiversity conservation in Southern Rwanda.',
+    poster: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    genre: 'Conservation Cinema',
+    category: 'documentaries',
+    duration: '22 min',
+    year: 2024,
     featured: false
+  },
+  // 6. Social Media Content
+  {
+    id: 9,
+    title: 'Kigali Fashion Week: 9:16 Reel Suite',
+    description: 'High-tempo vertical social reels and lifestyle cuts engineered for maximum engagement and brand virality on Instagram.',
+    synopsis: 'A suite of 6 vertical video cutdowns with sync sound, fast cuts, and punchy color grading.',
+    poster: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    genre: 'Social Reel Suite',
+    category: 'social',
+    duration: '45 sec',
+    year: 2025,
+    featured: false
+  },
+  // 7. Event Films
+  {
+    id: 10,
+    title: 'Africa CEO Forum Kigali: High-Impact Recap',
+    description: 'Cinematic event film capturing bilateral meetings, panel sessions, and evening networking receptions at Kigali Convention Center.',
+    synopsis: 'Fast-turnaround cinematic film summarizing 3 days of international summit proceedings with aerial drone sequences and soundbites.',
+    poster: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    genre: 'Event Film',
+    category: 'events',
+    duration: '4 min',
+    year: 2025,
+    featured: true
+  }
+];
+
+export const INITIAL_PHOTOS: Photo[] = [
+  // 1. Portrait Photography
+  {
+    id: 1,
+    title: 'The Master Woodcarver',
+    description: 'Atmospheric character portrait of a veteran craftsman in Nyamirambo, hands weathered with half a century of artistry.',
+    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1400&q=80',
+    category: 'portrait',
+    location: 'Nyamirambo, Kigali, Rwanda',
+    featured: true
+  },
+  {
+    id: 2,
+    title: 'Dancer of Umushanana',
+    description: 'Editorial portrait celebrating poise, traditional silks, and crown ornament of Rwandan choreography.',
+    imageUrl: '/src/assets/images/portrait_story_1785877547350.jpg',
+    category: 'portrait',
+    location: 'Kigali Cultural Village, Rwanda',
+    featured: true
+  },
+  // 2. Fashion Photography
+  {
+    id: 3,
+    title: 'Emerald Silks of Kigali',
+    description: 'Avant-garde fashion editorial featuring contemporary Rwandan draped silhouettes against geometric concrete architecture.',
+    imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1400&q=80',
+    category: 'fashion',
+    location: 'Kiyovu, Kigali, Rwanda',
+    featured: true
+  },
+  {
+    id: 4,
+    title: 'Youth & Contemporary Rhythm',
+    description: 'High-contrast studio fashion session exploring modern African youth identity and bold textiles.',
+    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1400&q=80',
+    category: 'fashion',
+    location: 'Wesley Studio, Kigali',
+    featured: true
+  },
+  // 3. Lifestyle Photography
+  {
+    id: 5,
+    title: 'Morning Along Lake Kivu',
+    description: 'Spontaneous candid lifestyle frame of lakeside coffee baristas greeting the morning mist in Karongi.',
+    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1400&q=80',
+    category: 'lifestyle',
+    location: 'Karongi, Western Rwanda',
+    featured: true
+  },
+  // 4. Event Photography
+  {
+    id: 6,
+    title: 'Gusaba Heritage Nuptials',
+    description: 'Intimate, emotional moment during traditional Rwandan dowry blessings and bridal entourage celebration.',
+    imageUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80',
+    category: 'event',
+    location: 'Gako, Rwanda',
+    featured: true
+  },
+  // 5. Brand Photography
+  {
+    id: 7,
+    title: 'Handmade Rwandan Ceramics',
+    description: 'Minimalist product styling and studio lighting for contemporary artisanal clay tableware.',
+    imageUrl: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=80',
+    category: 'brand',
+    location: 'Wesley Studio, Kacyiru',
+    featured: false
+  },
+  // 6. Landscape Photography
+  {
+    id: 8,
+    title: 'Mist Over Lake Kivu',
+    description: 'Dawn breaking over calm waters of Karongi as traditional wooden pirogue fishermen cast nets.',
+    imageUrl: '/src/assets/images/landscape_rwanda_1785877535052.jpg',
+    category: 'landscape',
+    location: 'Karongi, Western Province, Rwanda',
+    featured: true
+  },
+  {
+    id: 9,
+    title: 'The Thousand Hills Ridge',
+    description: 'Panoramic emerald terrace ridges bathed in golden twilight along the foothills of the Virunga volcanoes.',
+    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1400&q=80',
+    category: 'landscape',
+    location: 'Musanze, Northern Province, Rwanda',
+    featured: true
+  },
+  {
+    id: 10,
+    title: 'Kigali Skyline at Twilight',
+    description: 'Architectural luminescence of Kigali Convention Center glowing beneath equatorial blue hour skies.',
+    imageUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1400&q=80',
+    category: 'landscape',
+    location: 'Kacyiru, Kigali, Rwanda',
+    featured: true
   }
 ];
 
@@ -363,13 +537,13 @@ export const INITIAL_BOOKINGS: Booking[] = [
     email: 'mugisha@example.com',
     phone: '+250 788 123 456',
     serviceId: 1,
-    serviceName: 'Fine-Art & Editorial Portraiture',
+    serviceName: 'Corporate & Organizational Storytelling',
     date: '2026-10-18',
     time: '10:00 AM',
-    location: 'Kigali Studio',
-    notes: 'Editorial portraits for upcoming theatre premiere playbill and press kit.',
+    location: 'Kigali Headquarters',
+    notes: 'Documentary profile on agricultural innovation and youth employment.',
     status: 'confirmed',
-    directorNote: 'Confirmed! Studio lighting and makeup artist have been booked for 09:45 AM arrival.',
+    directorNote: 'Confirmed! Cinema crew and audio gear reserved for morning session.',
     decisionDate: '2026-10-02',
     createdAt: '2026-10-01'
   },
@@ -378,12 +552,12 @@ export const INITIAL_BOOKINGS: Booking[] = [
     clientName: 'Ingabire Clarisse',
     email: 'clarisse.in@gmail.com',
     phone: '+250 789 222 333',
-    serviceId: 4,
-    serviceName: 'African Wedding Narratives',
+    serviceId: 2,
+    serviceName: 'Brand Films & Cinematic Commercials',
     date: '2026-11-07',
     time: '08:00 AM',
-    location: 'Kigali Serena & Gako Farm',
-    notes: 'Traditional Gusaba ceremony and evening garden banquet.',
+    location: 'Kigali Serena',
+    notes: 'Brand campaign film launch and social media teaser package.',
     status: 'pending',
     createdAt: '2026-10-03'
   }
@@ -393,9 +567,9 @@ export const INITIAL_MESSAGES: Message[] = [
   {
     id: 'MSG-1',
     name: 'Amina Diallo',
-    email: 'amina@dakarfilmfest.org',
-    subject: 'Festival Invitation: The Echoes of Akagera',
-    message: 'Greetings Wesley, We would be thrilled to program your film in our Pan-African Panorama section in Dakar this November.',
+    email: 'amina@panfilm.org',
+    subject: 'Co-Production Inquiry: Short Narrative',
+    message: 'Greetings Wesley, We loved THREE NIGHTS and would be thrilled to discuss a narrative co-production in Kigali.',
     isRead: false,
     createdAt: '2026-10-04'
   },
@@ -403,8 +577,8 @@ export const INITIAL_MESSAGES: Message[] = [
     id: 'MSG-2',
     name: 'Eric Karemera',
     email: 'karemera.e@rwandafilm.rw',
-    subject: 'Documentary Co-production Inquiry',
-    message: 'Hello, looking to discuss a potential 3-part wildlife documentary commission across Nyungwe and Volcanoes parks.',
+    subject: 'Corporate Film Commission',
+    message: 'Hello Wesley, looking to commission a 3-part corporate brand film series across Rwanda.',
     isRead: true,
     createdAt: '2026-09-28'
   }
@@ -416,29 +590,20 @@ export const INITIAL_SUGGESTIONS: Suggestion[] = [
     name: 'Patrick Habineza',
     email: 'patrick@kigalimedia.rw',
     category: 'film_idea',
-    suggestion: 'It would be amazing to see a documentary exploring the traditional Inyambo royal cattle breeders in Nyanza!',
+    suggestion: 'It would be amazing to see a documentary exploring traditional cattle heritage in Nyanza!',
     createdAt: '2026-10-05',
     isRead: false
-  },
-  {
-    id: 'SUG-2',
-    name: 'Sarah Jenkins',
-    email: 'sjenkins@artsfoundation.org',
-    category: 'collaboration',
-    suggestion: 'Loved the portrait series. We would love to sponsor an exhibition tour in Nairobi and Kigali.',
-    createdAt: '2026-10-07',
-    isRead: true
   }
 ];
 
-// LocalStorage Keys
-const SETTINGS_KEY = 'wesley_studio_settings_v3';
-const SERVICES_KEY = 'wesley_studio_services_v3';
-const FILMS_KEY = 'wesley_studio_films_v3';
-const PHOTOS_KEY = 'wesley_studio_photos_v3';
-const BOOKINGS_KEY = 'wesley_studio_bookings_v3';
-const MESSAGES_KEY = 'wesley_studio_messages_v3';
-const SUGGESTIONS_KEY = 'wesley_studio_suggestions_v3';
+// LocalStorage Keys - v4 with new Seven Media & categorical schema
+const SETTINGS_KEY = 'wesley_studio_settings_v4';
+const SERVICES_KEY = 'wesley_studio_services_v4';
+const FILMS_KEY = 'wesley_studio_films_v4';
+const PHOTOS_KEY = 'wesley_studio_photos_v4';
+const BOOKINGS_KEY = 'wesley_studio_bookings_v4';
+const MESSAGES_KEY = 'wesley_studio_messages_v4';
+const SUGGESTIONS_KEY = 'wesley_studio_suggestions_v4';
 
 // Site Settings
 export function getStoredSettings(): SiteSettings {

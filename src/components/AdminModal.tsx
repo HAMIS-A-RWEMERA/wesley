@@ -50,9 +50,9 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
   const [showAddFilm, setShowAddFilm] = useState(false);
   const [newFilm, setNewFilm] = useState<Partial<Film>>({
     title: '',
-    genre: 'Drama / Cultural',
-    category: 'narrative',
-    duration: '25 min',
+    genre: 'Corporate Video / Profile',
+    category: 'corporate',
+    duration: '15 min',
     year: new Date().getFullYear(),
     description: '',
     synopsis: '',
@@ -230,8 +230,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
     const createdPhoto: Photo = {
       id: Date.now(),
       title: newPhoto.title || 'Untitled Photo',
-      category: (newPhoto.category as any) || 'landscape',
-      subCategory: newPhoto.subCategory || 'Lakes',
+      category: (newPhoto.category as any) || 'portrait',
       location: newPhoto.location || 'Kigali, Rwanda',
       description: newPhoto.description || '',
       imageUrl: newPhoto.imageUrl || '',
@@ -988,13 +987,30 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                         </div>
 
                         <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Genre & Category</label>
+                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Film & Video Category *</label>
+                          <select
+                            value={newFilm.category}
+                            onChange={(e) => setNewFilm({ ...newFilm, category: e.target.value as any })}
+                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none cursor-pointer"
+                          >
+                            <option value="corporate">Corporate Videos</option>
+                            <option value="brand">Brand Films</option>
+                            <option value="commercials">Commercials & Ads</option>
+                            <option value="shorts">Short Films</option>
+                            <option value="documentaries">Documentaries</option>
+                            <option value="social">Social Media Content</option>
+                            <option value="events">Event Films</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Genre / Tag</label>
                           <input
                             type="text"
                             value={newFilm.genre}
                             onChange={(e) => setNewFilm({ ...newFilm, genre: e.target.value })}
-                            placeholder="Drama / Cultural"
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            placeholder="Corporate / NGO / Narrative"
+                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none"
                           />
                         </div>
 
@@ -1101,14 +1117,18 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                         </div>
 
                         <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Gallery Type</label>
+                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Photography Sector</label>
                           <select
                             value={newPhoto.category}
                             onChange={(e) => setNewPhoto({ ...newPhoto, category: e.target.value as any })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none cursor-pointer"
+                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#a78bfa] focus:outline-none cursor-pointer"
                           >
-                            <option value="landscape">Landscape</option>
-                            <option value="portrait">Portrait</option>
+                            <option value="portrait">Portrait Photography</option>
+                            <option value="fashion">Fashion Photography</option>
+                            <option value="lifestyle">Lifestyle Photography</option>
+                            <option value="event">Event Photography</option>
+                            <option value="brand">Brand Photography</option>
+                            <option value="landscape">Landscape Photography</option>
                           </select>
                         </div>
 
