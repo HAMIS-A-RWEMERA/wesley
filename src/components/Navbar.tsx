@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Film as FilmIcon, ChevronDown, Calendar, Lock, Menu, X, Camera, Sparkles } from 'lucide-react';
-import { FILM_CATEGORIES, PHOTO_CATEGORIES, FilmCategory, PhotoCategory } from '../data';
+import React, { useState, useRef } from 'react';
+import { Film as FilmIcon, ChevronDown, Calendar, Lock, Menu, X } from 'lucide-react';
+import { FILM_CATEGORIES, PHOTO_CATEGORIES } from '../data';
 
 interface NavbarProps {
   currentPage: string;
@@ -52,37 +52,37 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#07090e]/85 backdrop-blur-xl border-b border-white/[0.07] transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <header className="fixed inset-x-0 top-3 z-50 px-3 sm:px-6 pointer-events-none">
+      <div className="pointer-events-auto mx-auto flex w-full max-w-6xl items-center justify-between rounded-full px-4 sm:px-6 py-2.5 glass-nav transition-all">
         
         {/* Brand Logo - Seven Media Inspired */}
         <button 
           onClick={() => handleNavClick('home')}
-          className="flex items-center gap-3 text-left group focus:outline-none cursor-pointer"
+          className="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f2fe]/20 to-[#a78bfa]/20 border border-[#00f2fe]/40 flex items-center justify-center text-[#00f2fe] group-hover:border-[#00f2fe] group-hover:shadow-[0_0_20px_rgba(0,242,254,0.35)] transition-all">
-            <FilmIcon className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+            <FilmIcon className="w-4 h-4" />
           </div>
           <div>
-            <span className="block font-display text-xl sm:text-2xl tracking-tight text-white font-extrabold group-hover:text-[#00f2fe] transition-colors">
+            <span className="block font-display text-lg sm:text-xl tracking-tight text-slate-900 font-extrabold group-hover:text-cyan-600 transition-colors">
               WESLEY
             </span>
-            <span className="block text-[10px] tracking-[0.2em] text-[#94a3b8] uppercase -mt-0.5 font-medium">
+            <span className="block text-[9px] tracking-[0.2em] text-slate-500 uppercase -mt-0.5 font-semibold">
               FILM & VISUAL ARTS
             </span>
           </div>
         </button>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1.5 xl:gap-2">
+        <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
           
           {/* 1. Home */}
           <button
             onClick={() => handleNavClick('home')}
-            className={`px-3.5 py-2 rounded-lg text-sm font-medium tracking-wide transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
               currentPage === 'home'
-                ? 'text-[#00f2fe] bg-white/[0.04]'
-                : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                ? 'text-cyan-700 bg-cyan-50/80 shadow-xs'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
             }`}
           >
             Home
@@ -91,10 +91,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 2. About */}
           <button
             onClick={() => handleNavClick('about')}
-            className={`px-3.5 py-2 rounded-lg text-sm font-medium tracking-wide transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
               currentPage === 'about'
-                ? 'text-[#00f2fe] bg-white/[0.04]'
-                : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                ? 'text-cyan-700 bg-cyan-50/80 shadow-xs'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
             }`}
           >
             About
@@ -108,23 +108,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <button
               onClick={() => handleNavClick('films')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium tracking-wide transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer flex items-center gap-1 ${
                 currentPage === 'films'
-                  ? 'text-[#00f2fe] bg-white/[0.04]'
-                  : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                  ? 'text-cyan-700 bg-cyan-50/80 shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
               }`}
             >
               <span>Film & Video</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${filmDropdownOpen ? 'rotate-180 text-[#00f2fe]' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${filmDropdownOpen ? 'rotate-180 text-cyan-600' : 'text-slate-400'}`} />
             </button>
 
             {/* Dropdown Menu */}
             {filmDropdownOpen && (
-              <div className="absolute top-full left-0 w-80 pt-2 z-50">
-                <div className="bg-[#0b0f19] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2 backdrop-blur-2xl">
-                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#94a3b8] border-b border-white/[0.06] mb-1 flex items-center justify-between">
+              <div className="absolute top-full left-0 w-80 pt-2.5 z-50">
+                <div className="bg-white/95 border border-slate-200/90 rounded-2xl shadow-[0_20px_40px_rgba(15,23,42,0.12)] p-2 backdrop-blur-2xl animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1 flex items-center justify-between">
                     <span>Film & Video Categories</span>
-                    <span className="text-[#00f2fe]">7 Sectors</span>
+                    <span className="text-cyan-600 font-semibold">7 Sectors</span>
                   </div>
                   
                   <div className="space-y-0.5">
@@ -134,18 +134,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onClick={() => handleNavClick('films', cat.id)}
                         className={`w-full text-left px-3 py-2 rounded-xl transition-all cursor-pointer group flex items-start gap-3 ${
                           currentPage === 'films' && selectedCategory === cat.id
-                            ? 'bg-[#00f2fe]/10 text-white'
-                            : 'hover:bg-white/[0.04] text-[#cbd5e1]'
+                            ? 'bg-cyan-50 text-cyan-900'
+                            : 'hover:bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <span className="text-[11px] font-mono text-[#00f2fe] opacity-70 group-hover:opacity-100 mt-0.5">
+                        <span className="text-[11px] font-mono text-cyan-600 font-bold opacity-80 group-hover:opacity-100 mt-0.5">
                           0{idx + 1}
                         </span>
                         <div>
-                          <div className="text-xs font-semibold text-white group-hover:text-[#00f2fe] transition-colors">
+                          <div className="text-xs font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">
                             {cat.title}
                           </div>
-                          <p className="text-[10px] text-[#94a3b8] line-clamp-1">
+                          <p className="text-[10px] text-slate-500 line-clamp-1">
                             {cat.shortDesc}
                           </p>
                         </div>
@@ -153,10 +153,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     ))}
                   </div>
 
-                  <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                  <div className="mt-1.5 pt-1.5 border-t border-slate-100">
                     <button
                       onClick={() => handleNavClick('films', 'all')}
-                      className="w-full text-center py-1.5 text-xs font-semibold text-[#00f2fe] hover:text-white transition-colors cursor-pointer"
+                      className="w-full text-center py-1.5 text-xs font-bold text-cyan-600 hover:text-cyan-700 transition-colors cursor-pointer"
                     >
                       View All Films Portfolio →
                     </button>
@@ -174,22 +174,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <button
               onClick={() => handleNavClick('photography')}
-              className={`px-3.5 py-2 rounded-lg text-sm font-medium tracking-wide transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer flex items-center gap-1 ${
                 currentPage === 'photography'
-                  ? 'text-[#00f2fe] bg-white/[0.04]'
-                  : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                  ? 'text-purple-700 bg-purple-50/80 shadow-xs'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
               }`}
             >
               <span>Photography</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${photoDropdownOpen ? 'rotate-180 text-[#00f2fe]' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${photoDropdownOpen ? 'rotate-180 text-purple-600' : 'text-slate-400'}`} />
             </button>
 
             {photoDropdownOpen && (
-              <div className="absolute top-full left-0 w-72 pt-2 z-50">
-                <div className="bg-[#0b0f19] border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-2 backdrop-blur-2xl">
-                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#94a3b8] border-b border-white/[0.06] mb-1 flex items-center justify-between">
+              <div className="absolute top-full left-0 w-76 pt-2.5 z-50">
+                <div className="bg-white/95 border border-slate-200/90 rounded-2xl shadow-[0_20px_40px_rgba(15,23,42,0.12)] p-2 backdrop-blur-2xl animate-in fade-in-50 zoom-in-95 duration-150">
+                  <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1 flex items-center justify-between">
                     <span>Photography Portfolios</span>
-                    <span className="text-[#a78bfa]">6 Galleries</span>
+                    <span className="text-purple-600 font-semibold">6 Galleries</span>
                   </div>
                   
                   <div className="space-y-0.5">
@@ -199,24 +199,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onClick={() => handleNavClick('photography', pcat.id)}
                         className={`w-full text-left px-3 py-2 rounded-xl transition-all cursor-pointer group ${
                           currentPage === 'photography' && selectedCategory === pcat.id
-                            ? 'bg-[#a78bfa]/15 text-white'
-                            : 'hover:bg-white/[0.04] text-[#cbd5e1]'
+                            ? 'bg-purple-50 text-purple-900'
+                            : 'hover:bg-slate-50 text-slate-700'
                         }`}
                       >
-                        <div className="text-xs font-semibold text-white group-hover:text-[#a78bfa] transition-colors">
+                        <div className="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors">
                           {pcat.title}
                         </div>
-                        <p className="text-[10px] text-[#94a3b8] line-clamp-1">
+                        <p className="text-[10px] text-slate-500 line-clamp-1">
                           {pcat.shortDesc}
                         </p>
                       </button>
                     ))}
                   </div>
 
-                  <div className="mt-2 pt-2 border-t border-white/[0.06]">
+                  <div className="mt-1.5 pt-1.5 border-t border-slate-100">
                     <button
                       onClick={() => handleNavClick('photography', 'all')}
-                      className="w-full text-center py-1.5 text-xs font-semibold text-[#a78bfa] hover:text-white transition-colors cursor-pointer"
+                      className="w-full text-center py-1.5 text-xs font-bold text-purple-600 hover:text-purple-700 transition-colors cursor-pointer"
                     >
                       View All Photography Galleries →
                     </button>
@@ -229,10 +229,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 5. Book a Session (Visible in Navigation) */}
           <button
             onClick={() => handleNavClick('booking')}
-            className={`px-3.5 py-2 rounded-lg text-sm font-semibold tracking-wide transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
               currentPage === 'booking'
-                ? 'text-[#00f2fe] bg-white/[0.04]'
-                : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                ? 'text-cyan-700 bg-cyan-50/80 shadow-xs'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
             }`}
           >
             Book a Session
@@ -241,10 +241,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* 6. Contact */}
           <button
             onClick={() => handleNavClick('contact')}
-            className={`px-3.5 py-2 rounded-lg text-sm font-medium tracking-wide transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
               currentPage === 'contact'
-                ? 'text-[#00f2fe] bg-white/[0.04]'
-                : 'text-[#cbd5e1] hover:text-white hover:bg-white/[0.02]'
+                ? 'text-cyan-700 bg-cyan-50/80 shadow-xs'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/60'
             }`}
           >
             Contact
@@ -252,21 +252,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Right Action CTAs */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2.5">
           <button
             onClick={() => handleNavClick('booking')}
-            className="px-5 py-2.5 rounded-full bg-white text-[#07090e] hover:bg-[#00f2fe] font-bold text-xs uppercase tracking-wider hover:shadow-[0_0_25px_rgba(0,242,254,0.5)] transition-all cursor-pointer flex items-center gap-2"
+            className="px-5 py-2 rounded-full bg-[#161f30] hover:bg-[#0f172a] text-white font-bold text-xs uppercase tracking-wider shadow-sm hover:shadow-md transition-all cursor-pointer flex items-center gap-2"
           >
-            <Calendar className="w-3.5 h-3.5" />
+            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
             <span>Book a Session</span>
           </button>
 
           <button
             onClick={onOpenAdmin}
             title="Studio Portal / CMS"
-            className="w-9 h-9 rounded-full border border-white/10 hover:border-[#00f2fe]/60 text-[#94a3b8] hover:text-[#00f2fe] flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8.5 h-8.5 rounded-full border border-slate-200 hover:border-cyan-400 text-slate-500 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer bg-white"
           >
-            <Lock className="w-4 h-4" />
+            <Lock className="w-3.5 h-3.5" />
           </button>
         </div>
 
@@ -275,16 +275,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onOpenAdmin}
             title="Studio Portal"
-            className="w-9 h-9 rounded-full border border-white/10 text-[#94a3b8] flex items-center justify-center"
+            className="w-8 h-8 rounded-full border border-slate-200 text-slate-600 flex items-center justify-center bg-white"
           >
-            <Lock className="w-4 h-4" />
+            <Lock className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 text-white flex items-center justify-center cursor-pointer"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-800 flex items-center justify-center cursor-pointer shadow-xs"
             aria-label="Toggle Navigation Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
 
@@ -292,92 +292,122 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Menu Panel */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#07090e]/98 border-b border-white/10 px-4 pt-4 pb-8 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="pointer-events-auto mt-2 mx-auto max-w-lg bg-white/95 backdrop-blur-2xl border border-slate-200/90 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto animate-in fade-in-50 zoom-in-95">
           <div className="space-y-1">
             <button
               onClick={() => handleNavClick('home')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-base font-semibold ${
-                currentPage === 'home' ? 'bg-[#00f2fe]/10 text-[#00f2fe]' : 'text-white'
+              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold ${
+                currentPage === 'home' ? 'bg-cyan-50 text-cyan-700' : 'text-slate-800 hover:bg-slate-50'
               }`}
             >
               Home
             </button>
+
             <button
               onClick={() => handleNavClick('about')}
-              className={`w-full text-left px-4 py-3 rounded-xl text-base font-semibold ${
-                currentPage === 'about' ? 'bg-[#00f2fe]/10 text-[#00f2fe]' : 'text-white'
+              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold ${
+                currentPage === 'about' ? 'bg-cyan-50 text-cyan-700' : 'text-slate-800 hover:bg-slate-50'
               }`}
             >
               About
             </button>
-          </div>
 
-          {/* Film & Video Categories Dropdown in Mobile */}
-          <div className="bg-[#0e1320] rounded-2xl p-3 border border-white/[0.06] space-y-2">
-            <div className="flex items-center justify-between px-2 pt-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#00f2fe]">
-                Film & Video Categories
-              </span>
-              <button 
-                onClick={() => handleNavClick('films')}
-                className="text-[11px] text-[#94a3b8] hover:text-white"
+            {/* Mobile Film & Video with Dropdown */}
+            <div>
+              <button
+                onClick={() => setFilmDropdownOpen(!filmDropdownOpen)}
+                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 flex items-center justify-between hover:bg-slate-50"
               >
-                All Films →
+                <span>Film & Video (7 Categories)</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${filmDropdownOpen ? 'rotate-180 text-cyan-600' : 'text-slate-400'}`} />
               </button>
-            </div>
-            <div className="grid grid-cols-1 gap-1">
-              {FILM_CATEGORIES.map((cat, i) => (
-                <button
-                  key={cat.id}
-                  onClick={() => handleNavClick('films', cat.id)}
-                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-[#e2e8f0] hover:bg-[#00f2fe]/10 flex items-center justify-between"
-                >
-                  <span>{cat.title}</span>
-                  <span className="text-[10px] text-[#94a3b8]">0{i + 1}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Photography Categories in Mobile */}
-          <div className="bg-[#0e1320] rounded-2xl p-3 border border-white/[0.06] space-y-2">
-            <div className="flex items-center justify-between px-2 pt-1">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#a78bfa]">
-                Photography Portfolios
-              </span>
-              <button 
-                onClick={() => handleNavClick('photography')}
-                className="text-[11px] text-[#94a3b8] hover:text-white"
+              {filmDropdownOpen && (
+                <div className="pl-4 pr-2 py-2 space-y-1 bg-slate-50 rounded-2xl my-1 border border-slate-100">
+                  <button
+                    onClick={() => handleNavClick('films', 'all')}
+                    className="w-full text-left px-3 py-1.5 text-xs font-bold text-cyan-700 hover:underline"
+                  >
+                    View All Film Work →
+                  </button>
+                  {FILM_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => handleNavClick('films', cat.id)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                        currentPage === 'films' && selectedCategory === cat.id
+                          ? 'text-cyan-700 bg-white font-bold shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {cat.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Mobile Photography with Dropdown */}
+            <div>
+              <button
+                onClick={() => setPhotoDropdownOpen(!photoDropdownOpen)}
+                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold text-slate-800 flex items-center justify-between hover:bg-slate-50"
               >
-                All Galleries →
+                <span>Photography (6 Categories)</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${photoDropdownOpen ? 'rotate-180 text-purple-600' : 'text-slate-400'}`} />
               </button>
-            </div>
-            <div className="grid grid-cols-2 gap-1">
-              {PHOTO_CATEGORIES.map((pcat) => (
-                <button
-                  key={pcat.id}
-                  onClick={() => handleNavClick('photography', pcat.id)}
-                  className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-medium text-[#e2e8f0] hover:bg-[#a78bfa]/10"
-                >
-                  {pcat.title.replace(' Photography', '')}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="space-y-2 pt-2">
+              {photoDropdownOpen && (
+                <div className="pl-4 pr-2 py-2 space-y-1 bg-slate-50 rounded-2xl my-1 border border-slate-100">
+                  <button
+                    onClick={() => handleNavClick('photography', 'all')}
+                    className="w-full text-left px-3 py-1.5 text-xs font-bold text-purple-700 hover:underline"
+                  >
+                    View All Photography Galleries →
+                  </button>
+                  {PHOTO_CATEGORIES.map((pcat) => (
+                    <button
+                      key={pcat.id}
+                      onClick={() => handleNavClick('photography', pcat.id)}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                        currentPage === 'photography' && selectedCategory === pcat.id
+                          ? 'text-purple-700 bg-white font-bold shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {pcat.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => handleNavClick('booking')}
-              className="w-full py-3.5 rounded-full bg-white text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold ${
+                currentPage === 'booking' ? 'bg-cyan-50 text-cyan-700' : 'text-slate-800 hover:bg-slate-50'
+              }`}
             >
-              <Calendar className="w-4 h-4" />
-              <span>Book a Session</span>
+              Book a Session
             </button>
+
             <button
               onClick={() => handleNavClick('contact')}
-              className="w-full py-3 rounded-xl border border-white/10 text-white font-medium text-sm text-center"
+              className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-bold ${
+                currentPage === 'contact' ? 'bg-cyan-50 text-cyan-700' : 'text-slate-800 hover:bg-slate-50'
+              }`}
             >
-              Contact Director Wesley
+              Contact
+            </button>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+            <button
+              onClick={() => handleNavClick('booking')}
+              className="w-full py-3 rounded-full bg-[#161f30] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Calendar className="w-4 h-4 text-cyan-400" />
+              <span>Book a Session Now</span>
             </button>
           </div>
         </div>

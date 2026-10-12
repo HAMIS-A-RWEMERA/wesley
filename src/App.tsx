@@ -57,7 +57,7 @@ export default function App() {
   };
 
   return (
-    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#07090e] text-[#f1f5f9]">
+    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#f8f9fc] text-[#111827] selection:bg-cyan-500/20 selection:text-cyan-900">
       {/* Sticky Navigation Bar */}
       <Navbar
         currentPage={currentPage}

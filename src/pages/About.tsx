@@ -1,6 +1,6 @@
 import React from 'react';
 import { getStoredSettings } from '../data';
-import { Camera, Film, Video, Mic, Sparkles, MapPin, Mail, Phone, Calendar, CheckCircle2 } from 'lucide-react';
+import { Camera, Sparkles, MapPin, Mail, Phone, Calendar, CheckCircle2 } from 'lucide-react';
 
 interface AboutProps {
   onNavigateBooking: () => void;
@@ -76,55 +76,57 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         <div className="lg:col-span-5">
-          <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-            <img
-              src={settings.profileImage}
-              alt="Wesley Filmmaker Kigali"
-              className="w-full h-full object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <span className="text-xs uppercase font-bold tracking-widest text-[#00f2fe]">
-                {settings.creatorRole}
-              </span>
-              <h2 className="font-display text-3xl font-extrabold text-white">
-                {settings.creatorName}
-              </h2>
-              <p className="text-xs text-[#94a3b8]">
-                Kigali, Rwanda
-              </p>
+          <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-slate-200 shadow-xl bg-white p-2">
+            <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-900">
+              <img
+                src={settings.profileImage}
+                alt="Wesley Filmmaker Kigali"
+                className="w-full h-full object-cover object-top"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <span className="text-xs uppercase font-extrabold tracking-widest text-cyan-400">
+                  {settings.creatorRole}
+                </span>
+                <h2 className="font-display text-3xl font-extrabold text-white">
+                  {settings.creatorName}
+                </h2>
+                <p className="text-xs text-slate-300">
+                  Kigali, Rwanda
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-7 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-[#0d121f] text-xs font-semibold uppercase tracking-wider text-[#00f2fe]">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-200 bg-white text-xs font-bold uppercase tracking-wider text-cyan-700 shadow-xs">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-500" />
             <span>Director & Cinematographer</span>
           </div>
 
-          <h1 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight uppercase leading-tight">
+          <h1 className="font-display text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight uppercase leading-tight">
             TELLING STORIES THAT <span className="highlight-word">RESONATE.</span>
           </h1>
           
-          <p className="text-base text-[#94a3b8] leading-relaxed">
+          <p className="text-base text-slate-600 leading-relaxed">
             {settings.directorBio1}
           </p>
-          <p className="text-base text-[#94a3b8] leading-relaxed">
+          <p className="text-base text-slate-600 leading-relaxed">
             {settings.directorBio2}
           </p>
 
           <div className="pt-4 flex flex-wrap items-center gap-4">
             <button
               onClick={onNavigateBooking}
-              className="px-7 py-3.5 rounded-full bg-white hover:bg-[#00f2fe] text-black font-extrabold text-xs uppercase tracking-wider hover:shadow-[0_0_25px_rgba(0,242,254,0.4)] transition-all cursor-pointer flex items-center gap-2"
+              className="px-7 py-3.5 rounded-full bg-[#161f30] hover:bg-[#0f172a] text-white font-extrabold text-xs uppercase tracking-wider shadow-md transition-all cursor-pointer flex items-center gap-2"
             >
-              <Calendar className="w-4 h-4" />
+              <Calendar className="w-4 h-4 text-cyan-400" />
               <span>Book a Session</span>
             </button>
             <button
               onClick={onNavigateContact}
-              className="px-7 py-3.5 rounded-full border border-white/15 hover:border-white text-white text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+              className="px-7 py-3.5 rounded-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-xs"
             >
               Contact Director
             </button>
@@ -133,13 +135,13 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
 
       </div>
 
-      {/* Focus & Production Capabilities (Replaced generic awards with actual production capabilities) */}
+      {/* Focus & Production Capabilities */}
       <div className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs uppercase font-bold tracking-[0.2em] text-[#00f2fe]">
+          <span className="text-xs uppercase font-extrabold tracking-[0.2em] text-cyan-700">
             Core Disciplines
           </span>
-          <h2 className="font-display text-3xl font-extrabold text-white uppercase tracking-tight">
+          <h2 className="font-display text-3xl font-extrabold text-slate-900 uppercase tracking-tight">
             WHAT WE <span className="highlight-word">DELIVER.</span>
           </h2>
         </div>
@@ -148,18 +150,18 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
           {focusAreas.map((item, idx) => (
             <div
               key={idx}
-              className="p-7 rounded-3xl bg-[#0d121f] border border-white/[0.08] hover:border-[#00f2fe]/40 space-y-3 transition-colors shadow-lg"
+              className="p-7 rounded-3xl bg-white border border-slate-200/90 hover:border-cyan-400 space-y-3 transition-colors shadow-xs hover:shadow-lg"
             >
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm font-bold text-[#00f2fe]">
+                <span className="font-mono text-sm font-extrabold text-cyan-600">
                   0{idx + 1}
                 </span>
-                <CheckCircle2 className="w-5 h-5 text-[#00f2fe]" />
+                <CheckCircle2 className="w-5 h-5 text-cyan-500" />
               </div>
-              <h3 className="font-display text-lg font-bold text-white">
+              <h3 className="font-display text-lg font-bold text-slate-900">
                 {item.title}
               </h3>
-              <p className="text-xs text-[#94a3b8] leading-relaxed">
+              <p className="text-xs text-slate-600 leading-relaxed font-normal">
                 {item.desc}
               </p>
             </div>
@@ -170,13 +172,13 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
       {/* Technical Arsenal & Cinema Optics */}
       <div className="space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs uppercase font-bold tracking-[0.2em] text-[#a78bfa]">
+          <span className="text-xs uppercase font-extrabold tracking-[0.2em] text-purple-700">
             Technical Arsenal
           </span>
-          <h2 className="font-display text-3xl font-extrabold text-white uppercase tracking-tight">
+          <h2 className="font-display text-3xl font-extrabold text-slate-900 uppercase tracking-tight">
             PRODUCTION CINEMA GEAR & <span className="highlight-word">OPTICS.</span>
           </h2>
-          <p className="text-xs sm:text-sm text-[#94a3b8]">
+          <p className="text-xs sm:text-sm text-slate-600">
             Equipped to deliver cinema-grade 4K/6K mastering, broadcast compliance, and dynamic field lighting anywhere across East Africa.
           </p>
         </div>
@@ -185,18 +187,18 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
           {gearCategories.map((cat, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-3xl bg-[#0d121f] border border-white/[0.08] hover:border-[#a78bfa]/40 space-y-4 shadow-lg transition-colors"
+              className="p-8 rounded-3xl bg-white border border-slate-200/90 hover:border-purple-400 space-y-4 shadow-xs hover:shadow-lg transition-colors"
             >
-              <div className="flex items-center gap-3 text-[#a78bfa]">
-                <Camera className="w-5 h-5" />
-                <h3 className="font-display text-lg font-bold text-white">
+              <div className="flex items-center gap-3 text-purple-700">
+                <Camera className="w-5 h-5 text-purple-600" />
+                <h3 className="font-display text-lg font-extrabold text-slate-900">
                   {cat.category}
                 </h3>
               </div>
               <ul className="space-y-2.5">
                 {cat.items.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#94a3b8]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00f2fe] shrink-0 mt-2" />
+                  <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0 mt-1.5" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -207,40 +209,40 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
       </div>
 
       {/* Studio Headquarters in Kigali */}
-      <div className="rounded-3xl bg-[#0d121f] border border-white/10 p-8 sm:p-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+      <div className="rounded-3xl bg-white border border-slate-200/90 p-8 sm:p-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center shadow-xs">
         <div className="space-y-2">
-          <span className="text-xs uppercase font-bold tracking-widest text-[#00f2fe]">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-cyan-700">
             STUDIO LOCATION
           </span>
-          <h3 className="font-display text-2xl font-bold text-white">
+          <h3 className="font-display text-2xl font-extrabold text-slate-900">
             Kigali Headquarters
           </h3>
-          <p className="text-xs text-[#94a3b8]">
+          <p className="text-xs text-slate-600 leading-relaxed">
             Open for client consultations, treatment reviews, edit screenings, and private studio sittings.
           </p>
         </div>
 
-        <div className="space-y-3 text-sm text-[#cbd5e1]">
+        <div className="space-y-3 text-sm text-slate-700">
           <div className="flex items-start gap-2.5">
-            <MapPin className="w-4 h-4 text-[#00f2fe] shrink-0 mt-0.5" />
+            <MapPin className="w-4 h-4 text-cyan-600 shrink-0 mt-0.5" />
             <span>{settings.address}</span>
           </div>
           <div className="flex items-center gap-2.5">
-            <Mail className="w-4 h-4 text-[#00f2fe] shrink-0" />
-            <a href={`mailto:${settings.email}`} className="text-[#00f2fe] hover:underline">
+            <Mail className="w-4 h-4 text-cyan-600 shrink-0" />
+            <a href={`mailto:${settings.email}`} className="text-cyan-700 hover:underline font-bold">
               {settings.email}
             </a>
           </div>
           <div className="flex items-center gap-2.5">
-            <Phone className="w-4 h-4 text-[#00f2fe] shrink-0" />
-            <span>{settings.phone}</span>
+            <Phone className="w-4 h-4 text-cyan-600 shrink-0" />
+            <span className="font-semibold">{settings.phone}</span>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
           <button
             onClick={onNavigateBooking}
-            className="w-full py-3.5 rounded-full bg-white hover:bg-[#00f2fe] text-black font-extrabold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+            className="w-full py-3.5 rounded-full bg-[#161f30] hover:bg-[#0f172a] text-white font-extrabold text-xs uppercase tracking-wider transition-colors cursor-pointer shadow-xs"
           >
             Book Studio Session
           </button>
@@ -248,7 +250,7 @@ export const About: React.FC<AboutProps> = ({ onNavigateBooking, onNavigateConta
             href={`https://wa.me/${settings.whatsapp}?text=Hello%20Wesley%2C%20I%20am%20interested%20in%20a%20film%20project`}
             target="_blank"
             rel="noreferrer"
-            className="w-full py-3.5 rounded-full border border-white/15 hover:border-[#25D366] text-[#cbd5e1] hover:text-[#25D366] text-xs font-semibold uppercase tracking-wider text-center transition-colors"
+            className="w-full py-3.5 rounded-full border border-slate-300 hover:border-[#25D366] bg-white text-slate-800 hover:text-[#25D366] text-xs font-bold uppercase tracking-wider text-center transition-colors shadow-xs"
           >
             WhatsApp +250 792 087 787
           </a>

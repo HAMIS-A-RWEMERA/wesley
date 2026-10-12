@@ -3,7 +3,7 @@ import {
   getStoredServices, saveBooking, Booking as BookingType, 
   getStoredSettings 
 } from '../data';
-import { Calendar, Clock, CheckCircle2, Send, ShieldCheck, Sparkles, MessageSquare } from 'lucide-react';
+import { Calendar, Clock, CheckCircle2, Send, ShieldCheck, MessageSquare } from 'lucide-react';
 
 interface BookingProps {
   preselectedServiceName?: string;
@@ -85,50 +85,50 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
       
       {/* Header Banner - Seven Media Styling */}
       <div className="text-center max-w-3xl mx-auto space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-[#0d121f] text-xs font-semibold uppercase tracking-wider text-[#00f2fe]">
-          <Calendar className="w-3.5 h-3.5" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cyan-200 bg-white text-xs font-bold uppercase tracking-wider text-cyan-700 shadow-xs">
+          <Calendar className="w-3.5 h-3.5 text-cyan-500" />
           <span>Production Scheduling & Commissions</span>
         </div>
         
-        <h1 className="font-display text-4xl sm:text-6xl font-extrabold text-white tracking-tight uppercase">
+        <h1 className="font-display text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight uppercase">
           BOOK A <span className="highlight-word">SESSION.</span>
         </h1>
         
-        <p className="text-base text-[#94a3b8] leading-relaxed">
+        <p className="text-base text-slate-600 leading-relaxed">
           Select your film production package, schedule a corporate shoot, or book an editorial portrait session with Director Wesley in Kigali.
         </p>
       </div>
 
       {submitted ? (
-        <div className="max-w-xl mx-auto p-10 rounded-3xl bg-[#0d121f] border border-[#00f2fe]/40 text-center space-y-6 shadow-2xl">
-          <div className="w-16 h-16 rounded-full bg-[#00f2fe]/10 text-[#00f2fe] flex items-center justify-center mx-auto border border-[#00f2fe]/30">
+        <div className="max-w-xl mx-auto p-10 rounded-3xl bg-white border border-cyan-400 text-center space-y-6 shadow-xl">
+          <div className="w-16 h-16 rounded-full bg-cyan-50 text-cyan-600 flex items-center justify-center mx-auto border border-cyan-200">
             <CheckCircle2 className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
-            <span className="text-xs uppercase font-bold tracking-widest text-[#00f2fe]">
+            <span className="text-xs uppercase font-extrabold tracking-widest text-cyan-700">
               Request Logged Successfully
             </span>
-            <h2 className="font-display text-2xl font-bold text-white">
+            <h2 className="font-display text-2xl font-extrabold text-slate-900">
               Booking Ref: {submittedBookingId}
             </h2>
-            <p className="text-sm text-[#94a3b8] leading-relaxed">
-              Thank you, <strong className="text-white">{clientName}</strong>. Your session for <strong className="text-white">{selectedService.name}</strong> has been transmitted to Director Wesley.
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Thank you, <strong className="text-slate-900">{clientName}</strong>. Your session for <strong className="text-slate-900">{selectedService.name}</strong> has been transmitted to Director Wesley.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#070a12] border border-white/10 text-xs text-[#94a3b8] space-y-1 text-left">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 space-y-1.5 text-left font-normal">
             <div className="flex justify-between">
               <span>Client Email:</span>
-              <span className="text-white font-mono">{email}</span>
+              <span className="text-slate-900 font-mono font-bold">{email}</span>
             </div>
             <div className="flex justify-between">
               <span>Target Shoot Date:</span>
-              <span className="text-white font-mono">{date}</span>
+              <span className="text-slate-900 font-mono font-bold">{date}</span>
             </div>
             <div className="flex justify-between">
               <span>Studio Response Time:</span>
-              <span className="text-[#00f2fe] font-medium">Within 24 Hours</span>
+              <span className="text-cyan-700 font-bold">Within 24 Hours</span>
             </div>
           </div>
 
@@ -137,14 +137,14 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
               href={`https://wa.me/250792087787?text=Hello%20Wesley%2C%20I%20just%20submitted%20booking%20${submittedBookingId}%20for%20${encodeURIComponent(selectedService.name)}`}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 py-3 rounded-full bg-[#25D366] text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+              className="flex-1 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-xs transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               <span>Confirm on WhatsApp</span>
             </a>
             <button
               onClick={onNavigateHome}
-              className="flex-1 py-3 rounded-full border border-white/20 hover:border-white text-white text-xs font-semibold uppercase tracking-wider"
+              className="flex-1 py-3.5 rounded-full border border-slate-300 hover:border-slate-400 bg-white text-slate-800 text-xs font-bold uppercase tracking-wider shadow-xs transition-colors"
             >
               Back to Home
             </button>
@@ -155,7 +155,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
           
           {/* Left: Packages Selection */}
           <div className="lg:col-span-5 space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-[#00f2fe]">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-cyan-700">
               1. Choose Production Package
             </h3>
 
@@ -169,26 +169,26 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     onClick={() => setSelectedServiceId(srv.id)}
                     className={`p-5 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#00f2fe]/10 border-[#00f2fe] shadow-[0_0_30px_rgba(0,242,254,0.15)]'
-                        : 'bg-[#0d121f] border-white/[0.08] hover:border-white/20'
+                        ? 'bg-cyan-50/70 border-cyan-400 shadow-md ring-2 ring-cyan-400/20'
+                        : 'bg-white border-slate-200/90 hover:border-slate-300 shadow-xs'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <h4 className="font-display text-base font-bold text-white">
+                      <h4 className="font-display text-base font-extrabold text-slate-900">
                         {srv.name}
                       </h4>
-                      <span className="font-mono text-sm font-bold text-[#00f2fe]">
+                      <span className="font-mono text-sm font-extrabold text-cyan-700">
                         {srv.price}
                       </span>
                     </div>
 
-                    <p className="text-xs text-[#94a3b8] mt-1 line-clamp-2">
+                    <p className="text-xs text-slate-600 mt-1 line-clamp-2">
                       {srv.tagline}
                     </p>
 
-                    <div className="flex items-center gap-4 text-[11px] text-[#64748b] mt-3 pt-2 border-t border-white/[0.05]">
+                    <div className="flex items-center gap-4 text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-100">
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3 text-[#00f2fe]" />
+                        <Clock className="w-3 h-3 text-cyan-600" />
                         {srv.duration}
                       </span>
                       <span>•</span>
@@ -200,14 +200,14 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
             </div>
 
             {/* Selected Package Features preview */}
-            <div className="p-6 rounded-2xl bg-[#090d16] border border-white/10 space-y-3">
-              <h4 className="font-display text-sm font-bold text-white uppercase tracking-wider text-[#00f2fe]">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-3">
+              <h4 className="font-display text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                 What's Included in {selectedService.name}
               </h4>
               <ul className="space-y-2">
                 {selectedService.features.map((feat, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-[#cbd5e1]">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#00f2fe] shrink-0 mt-1.5" />
+                  <li key={i} className="flex items-start gap-2 text-xs text-slate-600">
+                    <span className="w-2 h-2 rounded-full bg-cyan-500 shrink-0 mt-1.5" />
                     <span>{feat}</span>
                   </li>
                 ))}
@@ -216,12 +216,12 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
           </div>
 
           {/* Right: Booking Details Form */}
-          <div className="lg:col-span-7 bg-[#0d121f] border border-white/[0.08] rounded-3xl p-7 sm:p-10 space-y-6 shadow-2xl">
+          <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-3xl p-7 sm:p-10 space-y-6 shadow-sm">
             <div>
-              <span className="text-xs uppercase font-bold tracking-[0.2em] text-[#00f2fe]">
+              <span className="text-xs uppercase font-extrabold tracking-[0.2em] text-cyan-700">
                 2. Project & Client Info
               </span>
-              <h3 className="font-display text-2xl font-bold text-white mt-1">
+              <h3 className="font-display text-2xl font-extrabold text-slate-900 mt-1">
                 Schedule Your Session
               </h3>
             </div>
@@ -229,7 +229,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Your Name / Organization *
                   </label>
                   <input
@@ -238,12 +238,12 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
                     placeholder="e.g. Marie Claire / Kigali Tech"
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Email Address *
                   </label>
                   <input
@@ -252,14 +252,14 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@company.com"
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Phone / WhatsApp Number
                   </label>
                   <input
@@ -267,12 +267,12 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+250 788 000 000"
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Preferred Shoot Date *
                   </label>
                   <input
@@ -280,20 +280,20 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Preferred Time Slot
                   </label>
                   <select
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none cursor-pointer transition-colors"
                   >
                     <option value="">Select Time Slot</option>
                     <option value="Morning (09:00 AM – 12:00 PM)">Morning (09:00 AM – 12:00 PM)</option>
@@ -304,7 +304,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                  <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                     Location / Venue
                   </label>
                   <input
@@ -312,13 +312,13 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="Kigali Studio or on-location"
-                    className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs uppercase font-semibold text-[#94a3b8] mb-1.5">
+                <label className="block text-xs uppercase font-bold text-slate-700 mb-1.5">
                   Project Brief & Specific Requirements
                 </label>
                 <textarea
@@ -326,22 +326,22 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Tell Director Wesley about your creative vision, deliverable format, or deadline..."
-                  className="w-full px-4 py-3 rounded-xl bg-[#070a12] border border-white/10 text-white text-sm focus:border-[#00f2fe] focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm focus:border-cyan-500 focus:bg-white focus:outline-none transition-colors"
                 />
               </div>
 
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-full bg-white hover:bg-[#00f2fe] text-black font-extrabold text-xs uppercase tracking-widest hover:shadow-[0_0_30px_rgba(0,242,254,0.45)] transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-full bg-[#161f30] hover:bg-[#0f172a] text-white font-extrabold text-xs uppercase tracking-widest shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 text-cyan-400" />
                   <span>Submit Session Request</span>
                 </button>
               </div>
 
-              <div className="pt-2 flex items-center justify-center gap-2 text-xs text-[#64748b]">
-                <ShieldCheck className="w-4 h-4 text-[#00f2fe]" />
+              <div className="pt-2 flex items-center justify-center gap-2 text-xs text-slate-500">
+                <ShieldCheck className="w-4 h-4 text-cyan-600" />
                 <span>Submissions route directly to Director Wesley's portal and email.</span>
               </div>
             </form>
