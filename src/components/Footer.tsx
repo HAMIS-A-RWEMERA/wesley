@@ -1,16 +1,37 @@
-import React from 'react';
-import { STUDIO_INFO, FILM_CATEGORIES, PHOTO_CATEGORIES } from '../data';
-import { Film, Instagram, Youtube, Linkedin, ArrowUp, Lock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { STUDIO_INFO, FILM_CATEGORIES, PHOTO_CATEGORIES, getStoredSettings } from '../data';
+import { Film, Instagram, Youtube, Linkedin, ArrowUp, Lock, Sun, Moon } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (page: string, category?: string) => void;
   onOpenAdmin: () => void;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ 
+  onNavigate, 
+  onOpenAdmin,
+  theme = 'light',
+  onToggleTheme 
+}) => {
+  const [settings, setSettings] = useState(() => getStoredSettings());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSettings(getStoredSettings());
+    };
+    window.addEventListener('wesley_content_changed', handleUpdate);
+    return () => window.removeEventListener('wesley_content_changed', handleUpdate);
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const youtubeLink = settings.youtubeUrl || STUDIO_INFO.socials.youtube;
+  const instagramLink = settings.instagramUrl || STUDIO_INFO.socials.instagram;
+  const linkedinLink = settings.linkedinUrl || STUDIO_INFO.socials.linkedin;
 
   return (
     <footer className="bg-[#161f30] border-t border-slate-800 text-slate-400 pt-16 pb-12">
@@ -38,7 +59,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmin }) => {
 
             <div className="pt-2 flex items-center gap-3 text-white">
               <a 
-                href={STUDIO_INFO.socials.instagram} 
+                href={instagramLink} 
                 target="_blank" 
                 rel="noreferrer"
                 className="w-8 h-8 rounded-full border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center transition-colors bg-slate-900/50"
@@ -47,16 +68,16 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmin }) => {
                 <Instagram className="w-4 h-4" />
               </a>
               <a 
-                href={STUDIO_INFO.socials.youtube} 
+                href={youtubeLink} 
                 target="_blank" 
                 rel="noreferrer"
-                className="w-8 h-8 rounded-full border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center transition-colors bg-slate-900/50"
+                className="w-8 h-8 rounded-full border border-slate-700 hover:border-red-500 hover:text-red-400 flex items-center justify-center transition-colors bg-slate-900/50"
                 aria-label="YouTube"
               >
                 <Youtube className="w-4 h-4" />
               </a>
               <a 
-                href={STUDIO_INFO.socials.linkedin} 
+                href={linkedinLink} 
                 target="_blank" 
                 rel="noreferrer"
                 className="w-8 h-8 rounded-full border border-slate-700 hover:border-cyan-400 hover:text-cyan-400 flex items-center justify-center transition-colors bg-slate-900/50"
@@ -141,7 +162,27 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenAdmin }) => {
             © {new Date().getFullYear()} Wesley Studio. All rights reserved. Directed from Kigali, Rwanda.
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            {onToggleTheme && (
+              <button
+                onClick={onToggleTheme}
+                className="hover:text-cyan-400 text-slate-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-slate-300" />
+                    <span>Dark Mode</span>
+                  </>
+                )}
+              </button>
+            )}
+
             <button
               onClick={onOpenAdmin}
               className="hover:text-cyan-400 text-slate-400 flex items-center gap-1.5 transition-colors cursor-pointer"

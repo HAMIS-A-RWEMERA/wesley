@@ -18,15 +18,15 @@ export const MarqueeTicker: React.FC<MarqueeTickerProps> = ({ className = '' }) 
   ];
 
   return (
-    <div className={`marquee-container py-3.5 border-y border-slate-200/80 bg-white/85 backdrop-blur-md shadow-xs relative overflow-hidden ${className}`}>
+    <div className={`marquee-container py-3.5 border-y border-slate-200/80 dark:border-slate-800 bg-white/85 dark:bg-[#0c101a]/85 backdrop-blur-md shadow-xs relative overflow-hidden transition-colors ${className}`}>
       <div className="marquee-content flex items-center gap-10 pr-10">
         {items.map((item, idx) => (
           <div key={`m1-${idx}`} className="flex items-center gap-3 shrink-0">
             <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-xs" />
-            <span className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-slate-900">
+            <span className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
               {item.label}
             </span>
-            <span className="text-[11px] text-slate-500 font-medium tracking-wide">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium tracking-wide">
               — {item.tag}
             </span>
           </div>
@@ -37,10 +37,10 @@ export const MarqueeTicker: React.FC<MarqueeTickerProps> = ({ className = '' }) 
         {items.map((item, idx) => (
           <div key={`m2-${idx}`} className="flex items-center gap-3 shrink-0">
             <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-xs" />
-            <span className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-slate-900">
+            <span className="font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider text-slate-900 dark:text-white">
               {item.label}
             </span>
-            <span className="text-[11px] text-slate-500 font-medium tracking-wide">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium tracking-wide">
               — {item.tag}
             </span>
           </div>

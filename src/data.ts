@@ -1,3 +1,5 @@
+import { formatVideoEmbedUrl, getVideoThumbnail } from './utils/video';
+
 export type FilmCategory = 
   | 'corporate' 
   | 'brand' 
@@ -166,6 +168,10 @@ export interface SiteSettings {
   profileImage: string;
   heroBg: string;
   adminPassword: string;
+  youtubeUrl: string;
+  instagramUrl: string;
+  vimeoUrl: string;
+  linkedinUrl: string;
 }
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -190,7 +196,11 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   workingHours: 'Monday – Saturday: 08:30 AM – 06:00 PM (GMT+2)',
   profileImage: '/src/assets/images/wesley_profile_1785877494136.jpg',
   heroBg: '/src/assets/images/hero_background_1785877478689.jpg',
-  adminPassword: 'wesley2026!'
+  adminPassword: 'wesley2026!',
+  youtubeUrl: 'https://youtube.com',
+  instagramUrl: 'https://instagram.com',
+  vimeoUrl: 'https://vimeo.com',
+  linkedinUrl: 'https://linkedin.com'
 };
 
 export const STUDIO_INFO = {
@@ -206,10 +216,10 @@ export const STUDIO_INFO = {
   get profileImage() { return getStoredSettings().profileImage; },
   get heroBg() { return getStoredSettings().heroBg; },
   socials: {
-    instagram: 'https://instagram.com',
-    vimeo: 'https://vimeo.com',
-    youtube: 'https://youtube.com',
-    linkedin: 'https://linkedin.com'
+    get instagram() { return getStoredSettings().instagramUrl || 'https://instagram.com'; },
+    get vimeo() { return getStoredSettings().vimeoUrl || 'https://vimeo.com'; },
+    get youtube() { return getStoredSettings().youtubeUrl || 'https://youtube.com'; },
+    get linkedin() { return getStoredSettings().linkedinUrl || 'https://linkedin.com'; }
   }
 };
 
@@ -605,6 +615,12 @@ const BOOKINGS_KEY = 'wesley_studio_bookings_v4';
 const MESSAGES_KEY = 'wesley_studio_messages_v4';
 const SUGGESTIONS_KEY = 'wesley_studio_suggestions_v4';
 
+function notifyContentChanged() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('wesley_content_changed'));
+  }
+}
+
 // Site Settings
 export function getStoredSettings(): SiteSettings {
   try {
@@ -618,6 +634,7 @@ export function getStoredSettings(): SiteSettings {
 export function saveStoredSettings(settings: SiteSettings): SiteSettings {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    notifyContentChanged();
   } catch (e) {
     console.error('Failed to save settings:', e);
   }
@@ -637,6 +654,7 @@ export function getStoredServices(): Service[] {
 export function saveStoredServices(services: Service[]): Service[] {
   try {
     localStorage.setItem(SERVICES_KEY, JSON.stringify(services));
+    notifyContentChanged();
   } catch (e) {
     console.error('Failed to save services:', e);
   }
@@ -645,29 +663,55 @@ export function saveStoredServices(services: Service[]): Service[] {
 
 // Films
 export function getStoredFilms(): Film[] {
+  let list: Film[];
   try {
     const data = localStorage.getItem(FILMS_KEY);
-    return data ? JSON.parse(data) : INITIAL_FILMS;
+    list = data ? JSON.parse(data) : INITIAL_FILMS;
   } catch {
-    return INITIAL_FILMS;
+    list = INITIAL_FILMS;
   }
+
+  // Guarantee clean embed URLs and fallback posters for all films
+  return list.map(f => {
+    const safeVideoUrl = formatVideoEmbedUrl(f.videoUrl) || f.videoUrl;
+    const autoPoster = (!f.poster || f.poster.trim() === '')
+      ? (getVideoThumbnail(f.videoUrl) || '/src/assets/images/film_kigali_1785877521721.jpg')
+      : f.poster;
+    return {
+      ...f,
+      videoUrl: safeVideoUrl,
+      poster: autoPoster
+    };
+  });
 }
 
 export function saveFilm(film: Film): Film[] {
   const current = getStoredFilms();
-  const existingIdx = current.findIndex(f => f.id === film.id);
+  const safeVideoUrl = formatVideoEmbedUrl(film.videoUrl) || film.videoUrl;
+  const autoPoster = (!film.poster || film.poster.trim() === '')
+    ? (getVideoThumbnail(safeVideoUrl) || film.poster || '/src/assets/images/film_kigali_1785877521721.jpg')
+    : film.poster;
+
+  const normalizedFilm: Film = {
+    ...film,
+    videoUrl: safeVideoUrl,
+    poster: autoPoster
+  };
+
+  const existingIdx = current.findIndex(f => f.id === normalizedFilm.id);
   let updated: Film[];
   if (existingIdx >= 0) {
     updated = [...current];
-    updated[existingIdx] = film;
+    updated[existingIdx] = normalizedFilm;
   } else {
-    updated = [film, ...current];
+    updated = [normalizedFilm, ...current];
   }
   try {
     localStorage.setItem(FILMS_KEY, JSON.stringify(updated));
   } catch (e) {
     console.error('Failed to save film:', e);
   }
+  notifyContentChanged();
   return updated;
 }
 
@@ -679,6 +723,7 @@ export function deleteFilm(filmId: number): Film[] {
   } catch (e) {
     console.error('Failed to delete film:', e);
   }
+  notifyContentChanged();
   return updated;
 }
 

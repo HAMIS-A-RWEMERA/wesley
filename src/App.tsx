@@ -14,8 +14,10 @@ import { Booking } from './pages/Booking';
 import { Contact } from './pages/Contact';
 
 import { Film, Photo } from './data';
+import { useTheme } from './utils/theme';
 
 export default function App() {
+  const { theme, toggleTheme } = useTheme();
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
   const [activeVideoFilm, setActiveVideoFilm] = useState<Film | null>(null);
@@ -44,6 +46,15 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Listen for global studio content change events
+  useEffect(() => {
+    const handleContentChange = () => {
+      setContentVersion((v) => v + 1);
+    };
+    window.addEventListener('wesley_content_changed', handleContentChange);
+    return () => window.removeEventListener('wesley_content_changed', handleContentChange);
+  }, []);
+
   const navigateTo = (page: string, category?: string) => {
     setCurrentPage(page);
     setSelectedCategory(category);
@@ -57,13 +68,15 @@ export default function App() {
   };
 
   return (
-    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#f8f9fc] text-[#111827] selection:bg-cyan-500/20 selection:text-cyan-900">
+    <div key={contentVersion} className="min-h-screen flex flex-col bg-[#f8f9fc] text-[#111827] dark:bg-[#090b13] dark:text-[#f1f5f9] selection:bg-cyan-500/20 selection:text-cyan-900 transition-colors duration-300">
       {/* Sticky Navigation Bar */}
       <Navbar
         currentPage={currentPage}
         selectedCategory={selectedCategory}
         onNavigate={navigateTo}
         onOpenAdmin={() => setAdminModalOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Page Views */}
@@ -115,6 +128,8 @@ export default function App() {
       <Footer
         onNavigate={navigateTo}
         onOpenAdmin={() => setAdminModalOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Cinema Trailer Lightbox Player */}

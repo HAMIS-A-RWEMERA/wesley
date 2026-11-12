@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   getStoredSettings, saveMessage, saveSuggestion, 
   Message as MessageType, Suggestion as SuggestionType 
@@ -9,7 +9,15 @@ import {
 } from 'lucide-react';
 
 export const Contact: React.FC = () => {
-  const settings = getStoredSettings();
+  const [settings, setSettings] = useState(() => getStoredSettings());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setSettings(getStoredSettings());
+    };
+    window.addEventListener('wesley_content_changed', handleUpdate);
+    return () => window.removeEventListener('wesley_content_changed', handleUpdate);
+  }, []);
 
   // Contact Form State
   const [name, setName] = useState('');

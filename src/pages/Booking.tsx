@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   getStoredServices, saveBooking, Booking as BookingType, 
   getStoredSettings 
@@ -11,8 +11,17 @@ interface BookingProps {
 }
 
 export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavigateHome }) => {
-  const services = getStoredServices();
-  const settings = getStoredSettings();
+  const [services, setServices] = useState(() => getStoredServices());
+  const [settings, setSettings] = useState(() => getStoredSettings());
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setServices(getStoredServices());
+      setSettings(getStoredSettings());
+    };
+    window.addEventListener('wesley_content_changed', handleUpdate);
+    return () => window.removeEventListener('wesley_content_changed', handleUpdate);
+  }, []);
 
   const [selectedServiceId, setSelectedServiceId] = useState<number>(() => {
     if (preselectedServiceName) {
@@ -31,28 +40,30 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
   const [notes, setNotes] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submittedBookingId, setSubmittedBookingId] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   const selectedService = services.find(s => s.id === selectedServiceId) || services[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientName || !email || !date) {
-      alert('Please fill in your name, email, and preferred date.');
+    setFormError(null);
+    if (!clientName.trim() || !email.trim() || !date.trim()) {
+      setFormError('Please fill in your name, email, and preferred shoot date.');
       return;
     }
 
     const newBookingId = `BK-${Date.now().toString().slice(-4)}`;
     const newBooking: BookingType = {
       id: newBookingId,
-      clientName,
-      email,
-      phone,
+      clientName: clientName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
       serviceId: selectedService.id,
       serviceName: selectedService.name,
       date,
       time: time || 'Morning (TBD)',
-      location: location || 'Kigali Studio',
-      notes,
+      location: location.trim() || 'Kigali Studio',
+      notes: notes.trim(),
       status: 'pending',
       createdAt: new Date().toISOString().split('T')[0]
     };
@@ -61,7 +72,7 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
     setSubmittedBookingId(newBookingId);
     setSubmitted(true);
 
-    // Direct email notification to Director Wesley at settings.email
+    // Prepare direct email notification to Director Wesley
     const emailSubject = encodeURIComponent(`[New Shoot Booking] ${selectedService.name} - ${clientName}`);
     const emailBody = encodeURIComponent(
       `Hello Director Wesley,\n\nA new session booking has been requested on the website:\n\n` +
@@ -76,8 +87,9 @@ export const Booking: React.FC<BookingProps> = ({ preselectedServiceName, onNavi
       `Please review and confirm this booking in the Studio Portal.`
     );
 
-    // Trigger draft window
-    window.open(`mailto:${settings.email}?subject=${emailSubject}&body=${emailBody}`, '_blank');
+    try {
+      window.location.href = `mailto:${settings.email}?subject=${emailSubject}&body=${emailBody}`;
+    } catch {}
   };
 
   return (

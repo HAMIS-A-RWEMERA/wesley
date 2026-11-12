@@ -6,20 +6,28 @@ import {
   updateBookingWithDecision, markMessageRead, markSuggestionRead,
   saveStoredServices, saveStoredSettings, saveFilm, deleteFilm, savePhoto, deletePhoto
 } from '../data';
+import { parseVideoUrl, getVideoWatchUrl } from '../utils/video';
 import { 
   X, Lock, ShieldCheck, Calendar, Mail, Lightbulb, 
   DollarSign, FileText, Image as ImageIcon, CheckCircle2, 
   XCircle, Clock, Eye, LogOut, Check, Phone, MapPin, 
-  Send, Plus, Trash2, Edit3, Upload, Film as FilmIcon, MessageSquare 
+  Send, Plus, Trash2, Edit3, Upload, Film as FilmIcon, MessageSquare,
+  Youtube, Play, ExternalLink, Sparkles
 } from 'lucide-react';
 
 interface AdminModalProps {
   isOpen: boolean;
   onClose: () => void;
   onContentUpdated?: () => void;
+  onDataChanged?: () => void;
 }
 
-export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onContentUpdated }) => {
+export const AdminModal: React.FC<AdminModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onContentUpdated,
+  onDataChanged 
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [emailInput, setEmailInput] = useState('rwemera30@gmail.com');
   const [passwordInput, setPasswordInput] = useState('wesley2026!');
@@ -46,8 +54,10 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
   const [decisionStatus, setDecisionStatus] = useState<'confirmed' | 'cancelled'>('confirmed');
   const [directorNote, setDirectorNote] = useState('');
 
-  // New Film Form State
+  // Film Form & Editing State
   const [showAddFilm, setShowAddFilm] = useState(false);
+  const [editingFilmId, setEditingFilmId] = useState<number | null>(null);
+  const [previewTestUrl, setPreviewTestUrl] = useState<string | null>(null);
   const [newFilm, setNewFilm] = useState<Partial<Film>>({
     title: '',
     genre: 'Corporate Video / Profile',
@@ -57,7 +67,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
     description: '',
     synopsis: '',
     poster: '',
-    videoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
+    videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
     awards: '',
     featured: true
   });
@@ -67,7 +77,6 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
   const [newPhoto, setNewPhoto] = useState<Partial<Photo>>({
     title: '',
     category: 'landscape',
-    subCategory: 'Lakes',
     location: 'Kigali, Rwanda',
     description: '',
     imageUrl: '',
@@ -101,6 +110,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
     setSaveSuccessMsg(msg);
     setTimeout(() => setSaveSuccessMsg(''), 5000);
     if (onContentUpdated) onContentUpdated();
+    if (onDataChanged) onDataChanged();
   };
 
   const handleLogin = (e: React.FormEvent) => {
@@ -193,31 +203,81 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
     }
   };
 
-  // Save New Film
+  // Film Form Helpers
+  const handleStartEditFilm = (film: Film) => {
+    setEditingFilmId(film.id);
+    setNewFilm({
+      title: film.title,
+      genre: film.genre,
+      category: film.category,
+      duration: film.duration,
+      year: film.year,
+      description: film.description,
+      synopsis: film.synopsis,
+      poster: film.poster,
+      videoUrl: film.videoUrl,
+      awards: film.awards || '',
+      featured: Boolean(film.featured)
+    });
+    setShowAddFilm(true);
+  };
+
+  const handleCancelFilmForm = () => {
+    setShowAddFilm(false);
+    setEditingFilmId(null);
+    setNewFilm({
+      title: '',
+      genre: 'Corporate Video / Profile',
+      category: 'corporate',
+      duration: '15 min',
+      year: new Date().getFullYear(),
+      description: '',
+      synopsis: '',
+      poster: '',
+      videoUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4',
+      awards: '',
+      featured: true
+    });
+  };
+
+  // Save Film (Add or Update)
   const handleSaveNewFilm = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newFilm.title || !newFilm.poster) {
-      alert('Please provide at least a Title and Poster image.');
+    if (!newFilm.title || !newFilm.title.trim()) {
+      alert('Please provide a Title for the film.');
       return;
     }
-    const createdFilm: Film = {
-      id: Date.now(),
-      title: newFilm.title || 'Untitled Film',
-      genre: newFilm.genre || 'Documentary',
-      category: (newFilm.category as any) || 'documentary',
-      duration: newFilm.duration || '20 min',
-      year: Number(newFilm.year) || 2026,
+
+    const videoInput = newFilm.videoUrl || '';
+    const parsedVideo = parseVideoUrl(videoInput);
+
+    // If poster is empty, automatically use YouTube thumbnail!
+    const effectivePoster = (newFilm.poster && newFilm.poster.trim() !== '')
+      ? newFilm.poster.trim()
+      : (parsedVideo.thumbnailUrl || '/src/assets/images/film_kigali_1785877521721.jpg');
+
+    const effectiveVideoUrl = parsedVideo.embedUrl || videoInput || 'https://www.youtube.com/embed/ScMzIvxBSi4';
+
+    const filmToSave: Film = {
+      id: editingFilmId || Date.now(),
+      title: newFilm.title.trim(),
+      genre: newFilm.genre || 'Cinematic Film',
+      category: (newFilm.category as any) || 'corporate',
+      duration: newFilm.duration || '15 min',
+      year: Number(newFilm.year) || new Date().getFullYear(),
       description: newFilm.description || '',
       synopsis: newFilm.synopsis || newFilm.description || '',
-      poster: newFilm.poster || '',
-      videoUrl: newFilm.videoUrl || 'https://www.youtube.com/embed/ScMzIvxBSi4',
+      poster: effectivePoster,
+      videoUrl: effectiveVideoUrl,
       awards: newFilm.awards || '',
       featured: Boolean(newFilm.featured)
     };
-    const updated = saveFilm(createdFilm);
+
+    const updated = saveFilm(filmToSave);
     setFilms(updated);
-    setShowAddFilm(false);
-    triggerSaveAlert(`Film "${createdFilm.title}" added to showcase!`);
+    const wasEditing = Boolean(editingFilmId);
+    handleCancelFilmForm();
+    triggerSaveAlert(wasEditing ? `Film "${filmToSave.title}" updated successfully!` : `Film "${filmToSave.title}" added to showcase!`);
   };
 
   // Save New Photo
@@ -865,6 +925,67 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                         </div>
                       </div>
 
+                      {/* Official YouTube & Social Media Links */}
+                      <div className="p-4 rounded-xl bg-[#161622] border border-[#2a2a38] space-y-3">
+                        <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider">
+                          <Youtube className="w-3.5 h-3.5 text-red-500" />
+                          <span>Official YouTube & Social Media Channels</span>
+                        </div>
+                        <p className="text-[11px] text-[#8e8e9c]">
+                          These channel links appear directly in the website footer, navigation bar, and contact channels.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              YouTube Channel URL
+                            </label>
+                            <input
+                              type="text"
+                              value={settings.youtubeUrl || ''}
+                              onChange={(e) => setSettings({ ...settings, youtubeUrl: e.target.value })}
+                              placeholder="https://youtube.com/@wesleystudio"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              Instagram Profile URL
+                            </label>
+                            <input
+                              type="text"
+                              value={settings.instagramUrl || ''}
+                              onChange={(e) => setSettings({ ...settings, instagramUrl: e.target.value })}
+                              placeholder="https://instagram.com/wesleystudio"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              Vimeo Profile URL
+                            </label>
+                            <input
+                              type="text"
+                              value={settings.vimeoUrl || ''}
+                              onChange={(e) => setSettings({ ...settings, vimeoUrl: e.target.value })}
+                              placeholder="https://vimeo.com/wesleystudio"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] uppercase tracking-wider text-[#9e9ea8] mb-1 font-semibold">
+                              LinkedIn Company URL
+                            </label>
+                            <input
+                              type="text"
+                              value={settings.linkedinUrl || ''}
+                              onChange={(e) => setSettings({ ...settings, linkedinUrl: e.target.value })}
+                              placeholder="https://linkedin.com/in/wesleystudio"
+                              className="w-full px-3 py-2 rounded-lg bg-[#101016] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       {/* Clarification Box on Email Changes */}
                       <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-amber-200 text-xs leading-relaxed space-y-1">
                         <div className="font-bold flex items-center gap-1.5 text-[#d4af37]">
@@ -965,135 +1086,245 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                     </div>
                   </div>
 
-                  {/* Add Film Form Modal */}
-                  {showAddFilm && (
-                    <form onSubmit={handleSaveNewFilm} className="p-6 rounded-2xl bg-[#14141c] border border-[#d4af37]/50 space-y-4">
-                      <h5 className="font-cinzel text-base font-bold text-white flex items-center gap-2">
-                        <FilmIcon className="w-4 h-4 text-[#d4af37]" />
-                        <span>Add New Film Production</span>
-                      </h5>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Film Title *</label>
-                          <input
-                            type="text"
-                            required
-                            value={newFilm.title}
-                            onChange={(e) => setNewFilm({ ...newFilm, title: e.target.value })}
-                            placeholder="e.g. Voices of the Thousand Hills"
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Film & Video Category *</label>
-                          <select
-                            value={newFilm.category}
-                            onChange={(e) => setNewFilm({ ...newFilm, category: e.target.value as any })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none cursor-pointer"
+                  {/* Add / Edit Film Form Modal */}
+                  {showAddFilm && (() => {
+                    const parsedFilmVideo = parseVideoUrl(newFilm.videoUrl);
+                    return (
+                      <form onSubmit={handleSaveNewFilm} className="p-6 rounded-2xl bg-[#14141c] border border-[#d4af37]/60 space-y-4 shadow-xl">
+                        <div className="flex items-center justify-between border-b border-[#22222e] pb-3">
+                          <h5 className="font-cinzel text-base font-bold text-white flex items-center gap-2">
+                            <FilmIcon className="w-4 h-4 text-[#d4af37]" />
+                            <span>{editingFilmId ? 'Edit Film Production' : 'Add New Film Production'}</span>
+                            {editingFilmId && (
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#d4af37]/20 text-[#d4af37] font-sans font-bold">
+                                Editing Film #{editingFilmId}
+                              </span>
+                            )}
+                          </h5>
+                          <button
+                            type="button"
+                            onClick={handleCancelFilmForm}
+                            className="text-xs text-[#8e8e9c] hover:text-white cursor-pointer"
                           >
-                            <option value="corporate">Corporate Videos</option>
-                            <option value="brand">Brand Films</option>
-                            <option value="commercials">Commercials & Ads</option>
-                            <option value="shorts">Short Films</option>
-                            <option value="documentaries">Documentaries</option>
-                            <option value="social">Social Media Content</option>
-                            <option value="events">Event Films</option>
-                          </select>
+                            <X className="w-4 h-4" />
+                          </button>
                         </div>
 
-                        <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Genre / Tag</label>
-                          <input
-                            type="text"
-                            value={newFilm.genre}
-                            onChange={(e) => setNewFilm({ ...newFilm, genre: e.target.value })}
-                            placeholder="Corporate / NGO / Narrative"
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none"
-                          />
-                        </div>
-
-                        <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Runtime Duration</label>
-                          <input
-                            type="text"
-                            value={newFilm.duration}
-                            onChange={(e) => setNewFilm({ ...newFilm, duration: e.target.value })}
-                            placeholder="28 min"
-                            className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">
-                            Poster Image (Upload from Computer or Paste URL)
-                          </label>
-                          <div className="flex gap-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Film Title *</label>
                             <input
                               type="text"
-                              value={newFilm.poster}
-                              onChange={(e) => setNewFilm({ ...newFilm, poster: e.target.value })}
-                              placeholder="https://... or upload below"
-                              className="flex-1 px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                              required
+                              value={newFilm.title}
+                              onChange={(e) => setNewFilm({ ...newFilm, title: e.target.value })}
+                              placeholder="e.g. Voices of the Thousand Hills"
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
                             />
-                            <label className="px-3 py-2 rounded-lg bg-[#22222e] text-[#d4af37] hover:bg-[#d4af37] hover:text-black text-xs font-bold cursor-pointer flex items-center gap-1">
-                              <Upload className="w-3.5 h-3.5" />
-                              <span>Browse</span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleFileUpload(e, 'film')}
-                                className="hidden"
-                              />
-                            </label>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Film & Video Category *</label>
+                            <select
+                              value={newFilm.category}
+                              onChange={(e) => setNewFilm({ ...newFilm, category: e.target.value as any })}
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none cursor-pointer"
+                            >
+                              <option value="corporate">Corporate Videos</option>
+                              <option value="brand">Brand Films</option>
+                              <option value="commercials">Commercials & Ads</option>
+                              <option value="shorts">Short Films</option>
+                              <option value="documentaries">Documentaries</option>
+                              <option value="social">Social Media Content</option>
+                              <option value="events">Event Films</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Genre / Tag</label>
+                            <input
+                              type="text"
+                              value={newFilm.genre}
+                              onChange={(e) => setNewFilm({ ...newFilm, genre: e.target.value })}
+                              placeholder="Corporate / NGO / Narrative"
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#00f2fe] focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Runtime Duration</label>
+                            <input
+                              type="text"
+                              value={newFilm.duration}
+                              onChange={(e) => setNewFilm({ ...newFilm, duration: e.target.value })}
+                              placeholder="28 min"
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Release Year</label>
+                            <input
+                              type="number"
+                              value={newFilm.year}
+                              onChange={(e) => setNewFilm({ ...newFilm, year: Number(e.target.value) })}
+                              placeholder="2026"
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Awards / Laurels (Optional)</label>
+                            <input
+                              type="text"
+                              value={newFilm.awards || ''}
+                              onChange={(e) => setNewFilm({ ...newFilm, awards: e.target.value })}
+                              placeholder="Official Selection / Pan-African Award"
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                            />
                           </div>
                         </div>
 
+                        {/* Video URL & Poster Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                          
+                          {/* Video Link with Auto Detection */}
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1 flex items-center justify-between">
+                              <span>Video Link (YouTube, Vimeo, or Embed) *</span>
+                              {parsedFilmVideo.isValid && (
+                                <span className="text-[10px] text-emerald-400 font-semibold">
+                                  ✓ Valid format
+                                </span>
+                              )}
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={newFilm.videoUrl}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setNewFilm({ ...newFilm, videoUrl: val });
+                              }}
+                              placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                              className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none font-mono"
+                            />
+
+                            {/* Real-Time Detection Pill & Actions */}
+                            {parsedFilmVideo.isValid ? (
+                              <div className="mt-2 p-2.5 rounded-xl bg-[#191924] border border-[#2e2e40] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                                <div className="flex items-center gap-2">
+                                  {parsedFilmVideo.type === 'youtube' && (
+                                    <div className="w-6 h-6 rounded bg-red-600/20 text-red-500 flex items-center justify-center shrink-0">
+                                      <Youtube className="w-3.5 h-3.5" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <span className="font-bold text-white block text-[11px]">
+                                      {parsedFilmVideo.type === 'youtube' ? 'YouTube Video Recognized' : `${parsedFilmVideo.type.toUpperCase()} Link Detected`}
+                                    </span>
+                                    <span className="text-[10px] text-[#8e8e9c]">
+                                      Embed URL: <code className="text-cyan-400 font-mono">{parsedFilmVideo.embedUrl.slice(0, 38)}...</code>
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {parsedFilmVideo.thumbnailUrl && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setNewFilm(prev => ({ ...prev, poster: parsedFilmVideo.thumbnailUrl }));
+                                        triggerSaveAlert('YouTube high-res thumbnail applied as poster!');
+                                      }}
+                                      className="px-2.5 py-1 rounded bg-[#252536] hover:bg-[#d4af37] text-[#d4af37] hover:text-black text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center gap-1"
+                                      title="Auto-fetch high-resolution thumbnail from YouTube"
+                                    >
+                                      <span>⚡ Set as Poster</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewTestUrl(parsedFilmVideo.embedUrl)}
+                                    className="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center gap-1"
+                                  >
+                                    <Play className="w-2.5 h-2.5 fill-current" />
+                                    <span>Test Play</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="mt-1.5 text-[11px] text-[#8e8e9c] flex items-center gap-1.5">
+                                <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                                <span>Paste standard YouTube links (<code>https://www.youtube.com/watch?v=...</code> or <code>https://youtu.be/...</code>).</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Poster Image */}
+                          <div>
+                            <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">
+                              Poster Image (Upload, Paste URL, or use YouTube Thumbnail)
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={newFilm.poster}
+                                onChange={(e) => setNewFilm({ ...newFilm, poster: e.target.value })}
+                                placeholder="Paste image link or click 'Set as Poster' from YouTube"
+                                className="flex-1 px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
+                              />
+                              <label className="px-3 py-2 rounded-lg bg-[#22222e] text-[#d4af37] hover:bg-[#d4af37] hover:text-black text-xs font-bold cursor-pointer flex items-center gap-1 shrink-0">
+                                <Upload className="w-3.5 h-3.5" />
+                                <span>Browse</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => handleFileUpload(e, 'film')}
+                                  className="hidden"
+                                />
+                              </label>
+                            </div>
+                            {newFilm.poster && (
+                              <div className="mt-2 flex items-center gap-2 text-[11px] text-[#8e8e9c]">
+                                <img src={newFilm.poster} alt="Poster preview" className="w-10 h-6 object-cover rounded border border-[#2a2a36]" />
+                                <span className="truncate max-w-xs">{newFilm.poster}</span>
+                              </div>
+                            )}
+                          </div>
+
+                        </div>
+
                         <div>
-                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">
-                            Video Trailer Embed Link (YouTube or Vimeo)
-                          </label>
-                          <input
-                            type="text"
-                            value={newFilm.videoUrl}
-                            onChange={(e) => setNewFilm({ ...newFilm, videoUrl: e.target.value })}
-                            placeholder="https://www.youtube.com/embed/..."
+                          <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Short Description / Synopsis</label>
+                          <textarea
+                            rows={2}
+                            value={newFilm.description}
+                            onChange={(e) => setNewFilm({ ...newFilm, description: e.target.value })}
+                            placeholder="Describe the story narrative, impact, or client scope..."
                             className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
                           />
                         </div>
-                      </div>
 
-                      <div>
-                        <label className="block text-xs uppercase font-bold text-[#9e9ea8] mb-1">Short Description / Synopsis</label>
-                        <textarea
-                          rows={2}
-                          value={newFilm.description}
-                          onChange={(e) => setNewFilm({ ...newFilm, description: e.target.value })}
-                          placeholder="Describe the story narrative..."
-                          className="w-full px-3 py-2 rounded-lg bg-[#181820] border border-[#2a2a36] text-white text-xs focus:border-[#d4af37] focus:outline-none"
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-end gap-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setShowAddFilm(false)}
-                          className="px-4 py-2 rounded-lg text-xs text-[#8e8e9c] hover:text-white cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="px-6 py-2 rounded-lg bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:bg-[#f3e5ab] transition-colors cursor-pointer"
-                        >
-                          Save Film
-                        </button>
-                      </div>
-                    </form>
-                  )}
+                        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#22222e]">
+                          <button
+                            type="button"
+                            onClick={handleCancelFilmForm}
+                            className="px-4 py-2 rounded-lg text-xs text-[#8e8e9c] hover:text-white cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-6 py-2 rounded-lg bg-[#d4af37] text-black font-bold text-xs uppercase tracking-wider hover:bg-[#f3e5ab] transition-colors cursor-pointer flex items-center gap-1.5"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>{editingFilmId ? 'Update Film' : 'Save & Publish Film'}</span>
+                          </button>
+                        </div>
+                      </form>
+                    );
+                  })()}
 
                   {/* Add Photo Form Modal */}
                   {showAddPhoto && (
@@ -1187,36 +1418,117 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
                     </form>
                   )}
 
-                  {/* List of Existing Films */}
+                  {/* List of Existing Films with Edit & Preview */}
                   <div className="space-y-3">
-                    <h5 className="font-cinzel text-sm font-bold text-white uppercase tracking-wider">
-                      Current Films ({films.length})
-                    </h5>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {films.map((f) => (
-                        <div key={f.id} className="p-4 rounded-xl bg-[#131319] border border-[#22222c] flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-3 truncate">
-                            <img src={f.poster} alt={f.title} className="w-12 h-12 object-cover rounded-lg shrink-0" />
-                            <div className="truncate">
-                              <span className="font-bold text-white text-xs block truncate">{f.title}</span>
-                              <span className="text-[10px] text-[#8e8e9c]">{f.genre} • {f.year}</span>
+                    <div className="flex items-center justify-between">
+                      <h5 className="font-cinzel text-sm font-bold text-white uppercase tracking-wider">
+                        Current Films in Showcase ({films.length})
+                      </h5>
+                      <span className="text-[11px] text-[#8e8e9c]">
+                        Click pencil icon to edit video links, or play to test trailer
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {films.map((f) => {
+                        const parsed = parseVideoUrl(f.videoUrl);
+                        const isYT = parsed.type === 'youtube';
+
+                        return (
+                          <div
+                            key={f.id}
+                            className={`p-4 rounded-xl bg-[#131319] border transition-all flex flex-col justify-between gap-3 ${
+                              editingFilmId === f.id
+                                ? 'border-[#d4af37] ring-1 ring-[#d4af37]/40 bg-[#171722]'
+                                : 'border-[#22222c] hover:border-[#d4af37]/50'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-900 group">
+                                <img
+                                  src={f.poster}
+                                  alt={f.title}
+                                  className="w-full h-full object-cover"
+                                />
+                                {f.videoUrl && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewTestUrl(parsed.embedUrl || f.videoUrl)}
+                                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-cyan-400"
+                                    title="Play Trailer Preview"
+                                  >
+                                    <Play className="w-5 h-5 fill-current" />
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <span className="font-bold text-white text-xs block truncate" title={f.title}>
+                                  {f.title}
+                                </span>
+                                <span className="text-[10px] text-[#8e8e9c] block capitalize">
+                                  {f.category} • {f.duration} • {f.year}
+                                </span>
+                                
+                                <div className="flex items-center gap-1.5 mt-1">
+                                  {isYT ? (
+                                    <span className="inline-flex items-center gap-1 text-[10px] text-red-400 bg-red-950/40 px-1.5 py-0.5 rounded border border-red-500/30">
+                                      <Youtube className="w-2.5 h-2.5 shrink-0" />
+                                      <span>YouTube: {parsed.videoId}</span>
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-[10px] text-cyan-400 bg-cyan-950/40 px-1.5 py-0.5 rounded border border-cyan-500/30 truncate max-w-[140px]">
+                                      <FilmIcon className="w-2.5 h-2.5 shrink-0" />
+                                      <span className="truncate">Video Link</span>
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Card Action Buttons */}
+                            <div className="pt-2 border-t border-[#1f1f28] flex items-center justify-between gap-2">
+                              {f.videoUrl ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewTestUrl(parsed.embedUrl || f.videoUrl)}
+                                  className="px-2.5 py-1 rounded bg-[#1c1c26] hover:bg-cyan-500 hover:text-black text-cyan-400 text-[10px] font-bold uppercase transition-colors cursor-pointer flex items-center gap-1"
+                                >
+                                  <Play className="w-2.5 h-2.5 fill-current" />
+                                  <span>Test Play</span>
+                                </button>
+                              ) : (
+                                <span className="text-[10px] text-slate-500">No Video</span>
+                              )}
+
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleStartEditFilm(f)}
+                                  className="p-1.5 rounded text-[#d4af37] hover:bg-[#d4af37]/20 transition-colors cursor-pointer"
+                                  title="Edit Film & Video Link"
+                                >
+                                  <Edit3 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (confirm(`Delete film "${f.title}"?`)) {
+                                      const updated = deleteFilm(f.id);
+                                      setFilms(updated);
+                                      triggerSaveAlert(`Film deleted.`);
+                                    }
+                                  }}
+                                  className="p-1.5 rounded text-red-400 hover:bg-red-500/20 transition-colors cursor-pointer"
+                                  title="Delete Film"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              if (confirm(`Delete film "${f.title}"?`)) {
-                                const updated = deleteFilm(f.id);
-                                setFilms(updated);
-                                triggerSaveAlert(`Film deleted.`);
-                              }
-                            }}
-                            className="p-1.5 rounded text-red-400 hover:bg-red-500/20 cursor-pointer"
-                            title="Delete Film"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1347,6 +1659,47 @@ export const AdminModal: React.FC<AdminModalProps> = ({ isOpen, onClose, onConte
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Confirm Status & Send Email</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Test Play Video Preview Modal */}
+      {previewTestUrl && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-3xl bg-[#0e0e14] border border-[#d4af37]/60 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[#22222e] bg-[#07070a]">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#d4af37] flex items-center gap-2">
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Trailer Player Verification</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setPreviewTestUrl(null)}
+                className="text-[#94a3b8] hover:text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="w-full aspect-video bg-black">
+              <iframe
+                src={previewTestUrl}
+                title="Preview"
+                className="w-full h-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+              />
+            </div>
+            <div className="p-3 bg-[#07070a] border-t border-[#22222e] flex items-center justify-between text-xs text-[#8e8e9c]">
+              <span>Verified player output using converted embed URL.</span>
+              <button
+                type="button"
+                onClick={() => setPreviewTestUrl(null)}
+                className="px-4 py-1.5 rounded-full bg-[#d4af37] text-black font-bold text-xs uppercase"
+              >
+                Close Preview
               </button>
             </div>
           </div>
