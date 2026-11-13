@@ -29,7 +29,7 @@ export const AdminModal: React.FC<AdminModalProps> = ({
   onDataChanged 
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [emailInput, setEmailInput] = useState('rwemera30@gmail.com');
+  const [emailInput, setEmailInput] = useState('wesleymwizerwa09@gmail.com');
   const [passwordInput, setPasswordInput] = useState('wesley2026!');
   const [loginError, setLoginError] = useState('');
 

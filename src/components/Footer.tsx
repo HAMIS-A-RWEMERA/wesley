@@ -135,8 +135,8 @@ export const Footer: React.FC<FooterProps> = ({
               KG 7 Ave, Kacyiru<br />Kigali, Rwanda
             </p>
             <p className="text-xs">
-              <a href="mailto:rwemera30@gmail.com" className="text-cyan-400 hover:underline">
-                rwemera30@gmail.com
+              <a href={`mailto:${settings.email}`} className="text-cyan-400 hover:underline">
+                {settings.email}
               </a>
             </p>
             <p className="text-xs text-white">

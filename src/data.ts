@@ -189,7 +189,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   studioName: 'WESLEY STUDIO',
   creatorName: 'Wesley',
   creatorRole: 'Filmmaker & Visual Storyteller',
-  email: 'rwemera30@gmail.com',
+  email: 'wesleymwizerwa09@gmail.com',
   phone: '+250 792 087 787',
   whatsapp: '250792087787',
   address: 'KG 7 Ave, Kacyiru, Kigali, Rwanda',
