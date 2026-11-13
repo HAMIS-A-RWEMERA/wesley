@@ -14,11 +14,7 @@ export function getInitialTheme(): ThemeMode {
     }
   } catch {}
 
-  // If user system prefers dark, or default to light
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark';
-  }
-  
+  // Default to light mode unless user explicitly toggled dark mode
   return 'light';
 }
 
